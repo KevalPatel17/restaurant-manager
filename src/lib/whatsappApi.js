@@ -1,19 +1,9 @@
 import { generateWhatsAppBillText } from '../utils/whatsappBill';
 import { supabase } from './supabase';
 
-/**
- * WAHA Direct & Cloud Delivery Engine for Musafir Cafe
- * Uses WAHA API Key authentication for direct local and cloud sending.
- */
-
 const DEFAULT_WAHA_API_KEY = 'musafir123';
 
 export const whatsappApi = {
-  /**
-   * Sends the digital bill to the customer's phone number
-   * @param {Object} order The order object with customer_phone and items
-   * @param {Object} cafeSettings Cafe settings with sender phone (+91 9537533472)
-   */
   sendOneTimeBill: async (order, cafeSettings = {}) => {
     if (!order) return { success: false, error: 'No order provided' };
 
@@ -57,14 +47,12 @@ export const whatsappApi = {
 
       const resData = await response.json().catch(() => ({}));
       if (response.ok) {
-        console.log('✅ [WHATSAPP WAHA] Successfully delivered via direct WAHA fetch:', resData);
+        console.log('✅ [WHATSAPP WAHA] Delivered directly via WAHA:', resData);
         delivered = true;
       } else {
-        console.warn('⚠️ Direct WAHA returned error status:', response.status, resData);
         deliveryError = resData?.message || `HTTP ${response.status}: ${JSON.stringify(resData)}`;
       }
     } catch (directErr) {
-      console.warn('⚠️ Direct browser fetch to WAHA failed (trying Edge Function):', directErr.message);
       deliveryError = directErr.message;
     }
 
@@ -79,7 +67,6 @@ export const whatsappApi = {
         });
 
         if (data && data.success) {
-          console.log('✅ [WHATSAPP WAHA] Delivered via Supabase Edge Function:', data);
           delivered = true;
         } else if (error || data?.results?.[0]?.error) {
           deliveryError = error?.message || data?.results?.[0]?.error || deliveryError;
@@ -104,7 +91,7 @@ export const whatsappApi = {
 
     if (!delivered) {
       throw new Error(
-        deliveryError || 'Could not connect to WAHA. Please ensure QR code is scanned in WAHA dashboard.'
+        deliveryError || 'Could not connect to WAHA. Please ensure WAHA is running and session is active.'
       );
     }
 

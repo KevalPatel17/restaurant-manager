@@ -1,76 +1,51 @@
-import React from 'react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
-import Navbar from './components/Navbar';
-import CustomerMenu from './pages/CustomerMenu';
-import OrderConfirmation from './pages/OrderConfirmation';
-import KitchenDashboard from './pages/KitchenDashboard';
-import QRGenerator from './pages/QRGenerator';
-import AdminLogin from './pages/AdminLogin';
-import AdminPanel from './pages/AdminPanel';
-import ProtectedRoute from './components/ProtectedRoute';
+import { Routes, Route } from 'react-router-dom'
+import AnnouncementBar from './components/AnnouncementBar'
+import Navbar from './components/Navbar'
+import Footer from './components/Footer'
+import Home from './pages/Home'
+import OurStory from './pages/OurStory'
+import Menu from './pages/Menu'
+import CategoryDetail from './pages/CategoryDetail'
+import Cookies from './pages/Cookies'
+import AdminLogin from './pages/AdminLogin'
+import AdminPanel from './pages/AdminPanel'
+import KitchenDisplay from './pages/KitchenDisplay'
+import OrderStatus from './pages/OrderStatus'
+import { CartProvider } from './context/CartContext'
+import { Toaster } from 'react-hot-toast'
 
-export default function App() {
-  const location = useLocation();
+import CartDrawer from './components/CartDrawer'
 
-  // Hide top public navbar on Admin Panel to maximize workspace
-  const isDedicatedAdmin = location.pathname.startsWith('/admin');
-
+// Shared layout: announcement bar + navbar + page content + footer + cart drawer
+function Layout({ children }) {
   return (
-    <div className="min-h-screen bg-[#FDF8F2] text-[#2A2521] flex flex-col font-sans">
-      
-      {/* Toast Notification Container with Cafe Theming */}
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          style: {
-            background: '#1E130D',
-            color: '#FFFFFF',
-            borderRadius: '16px',
-            border: '1px solid rgba(223, 155, 82, 0.4)',
-            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.25)',
-            fontSize: '13px',
-            fontWeight: '600',
-          },
-          success: {
-            iconTheme: {
-              primary: '#2D8A4E',
-              secondary: '#FFFFFF',
-            },
-          },
-          error: {
-            iconTheme: {
-              primary: '#DC2626',
-              secondary: '#FFFFFF',
-            },
-          },
-        }}
-      />
-
-      {/* Public / Staff Top Navbar */}
-      {!isDedicatedAdmin && <Navbar />}
-
-      {/* Main Viewport Routes */}
-      <div className="flex-1">
-        <Routes>
-          <Route path="/" element={<Navigate to="/menu?table=1" replace />} />
-          <Route path="/menu" element={<CustomerMenu />} />
-          <Route path="/order/:id" element={<OrderConfirmation />} />
-          <Route path="/kitchen" element={<KitchenDashboard />} />
-          <Route path="/qr" element={<QRGenerator />} />
-          <Route path="/login" element={<AdminLogin />} />
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute>
-                <AdminPanel />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="*" element={<Navigate to="/menu?table=1" replace />} />
-        </Routes>
-      </div>
-
-    </div>
-  );
+    <>
+      <AnnouncementBar />
+      <Navbar />
+      {children}
+      <Footer />
+      <CartDrawer />
+    </>
+  )
 }
+
+function App() {
+  return (
+    <CartProvider>
+      <Toaster position="top-right" toastOptions={{ duration: 3500 }} />
+      <Routes>
+        <Route path="/" element={<Layout><Home /></Layout>} />
+        <Route path="/our-story" element={<Layout><OurStory /></Layout>} />
+        <Route path="/menu" element={<Layout><Menu /></Layout>} />
+        <Route path="/menu/:categoryId" element={<Layout><CategoryDetail /></Layout>} />
+        <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
+        <Route path="/login" element={<Layout><AdminLogin /></Layout>} />
+        <Route path="/admin" element={<AdminPanel />} />
+        <Route path="/kitchen" element={<KitchenDisplay />} />
+        <Route path="/order-status" element={<OrderStatus />} />
+      </Routes>
+    </CartProvider>
+  )
+}
+
+export default App

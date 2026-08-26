@@ -15,7 +15,7 @@ export function CartProvider({ children }) {
 
   const [tableNumber, setTableNumber] = useState(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('table') || localStorage.getItem('musafir_table_number') || '1';
+    return urlParams.get('table') || null;
   });
 
   const [customerInfo, setCustomerInfo] = useState(() => {
@@ -41,9 +41,9 @@ export function CartProvider({ children }) {
         gpay_qr_url: '/gpay_scanner.jpg',
         auto_send_whatsapp_bill: true,
         whatsapp_provider: 'direct',
-        whatsapp_instance_id: '',
-        whatsapp_token: '',
-        whatsapp_webhook_url: '',
+        waha_api_url: 'http://localhost:3000',
+        waha_session: 'default',
+        waha_api_key: 'musafir123',
       };
     } catch {
       return {
@@ -55,9 +55,9 @@ export function CartProvider({ children }) {
         gpay_qr_url: '/gpay_scanner.jpg',
         auto_send_whatsapp_bill: true,
         whatsapp_provider: 'direct',
-        whatsapp_instance_id: '',
-        whatsapp_token: '',
-        whatsapp_webhook_url: '',
+        waha_api_url: 'http://localhost:3000',
+        waha_session: 'default',
+        waha_api_key: 'musafir123',
       };
     }
   });
@@ -73,7 +73,6 @@ export function CartProvider({ children }) {
 
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // Fetch available tables from backend/Supabase
   useEffect(() => {
     async function loadTables() {
       try {
@@ -82,7 +81,7 @@ export function CartProvider({ children }) {
           setTablesList(tables);
         }
       } catch (err) {
-        console.warn('Could not load dynamic tables list, using defaults:', err);
+        console.warn('Could not load tables list, using defaults:', err);
       }
     }
     loadTables();
@@ -95,6 +94,8 @@ export function CartProvider({ children }) {
   useEffect(() => {
     if (tableNumber) {
       localStorage.setItem('musafir_table_number', tableNumber);
+    } else {
+      localStorage.removeItem('musafir_table_number');
     }
   }, [tableNumber]);
 
@@ -119,7 +120,6 @@ export function CartProvider({ children }) {
     }).catch(() => {});
   };
 
-  // Unique cart item identifier based on item ID and customization notes
   const getCartKey = (item, customization = '') => `${item.id}_${customization.trim()}`;
 
   const addToCart = (item, customization = '', quantity = 1) => {

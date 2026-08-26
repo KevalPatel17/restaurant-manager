@@ -1,57 +1,132 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Custom Font: Lobster ────────────────────────────────────── */
+@font-face {
+  font-family: 'Lobster';
+  src: url('./assets/font/Lobster-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Scroll reveal text animations ───────────────────────────── */
+.reveal-text {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+  will-change: opacity, transform;
+}
+.reveal-text--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hero entrance animations (play on page load) */
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(36px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-hero {
+  animation: heroFadeUp 1s ease forwards;
+}
+.animate-hero-delay-1 { animation: heroFadeUp 1s ease 0.25s forwards; opacity: 0; }
+.animate-hero-delay-2 { animation: heroFadeUp 1s ease 0.5s forwards; opacity: 0; }
+
+/* Pop animation when a cookie is added to a slot */
+@keyframes pop {
+  0%   { transform: scale(0.7); opacity: 0.4; }
+  50%  { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-pop {
+  animation: pop 0.45s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-text,
+  .animate-hero,
+  .animate-hero-delay-1,
+  .animate-hero-delay-2 {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}
 
 @layer base {
-  html {
-    scroll-behavior: smooth;
-    -webkit-tap-highlight-color: transparent;
-  }
-  
   body {
-    min-height: 100vh;
-    background-color: #FDF8F2;
-    color: #2A2521;
+    background-color: #faf8f4;
+    color: #1c1c1c;
+    font-family: "Lato", sans-serif;
   }
 }
 
-/* Custom Scrollbar for Category Tabs & Modals */
-::-webkit-scrollbar {
-  height: 4px;
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #DF9B52;
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #C86D3B;
-}
-
-/* Hide scrollbar utility */
+/* Hide scrollbar for Chrome, Safari and Opera */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+/* Hide scrollbar for IE, Edge and Firefox */
 .no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
-/* Glassmorphic backdrop utility */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(223, 155, 82, 0.18);
+@layer components {
+  .btn-dark {
+    @apply bg-green text-white font-sans font-bold text-xs tracking-widest uppercase px-9 py-4 hover:bg-green-dark transition-colors duration-200 inline-block;
+  }
+  .btn-outline {
+    @apply border border-green text-green font-sans font-bold text-xs tracking-widest uppercase px-9 py-4 hover:bg-green hover:text-white transition-colors duration-200 inline-block;
+  }
+  .btn-white {
+    @apply bg-white text-green font-sans font-bold text-xs tracking-widest uppercase px-9 py-4 hover:bg-cream transition-colors duration-200 inline-block;
+  }
+  .section-heading {
+    @apply font-serif text-4xl md:text-5xl font-semibold text-[#1C1C1C] leading-tight;
+  }
+  .section-sub {
+    @apply font-sans font-light text-muted text-base md:text-lg leading-relaxed;
+  }
+  .nav-link {
+    @apply font-sans font-normal text-white text-xs tracking-widest uppercase hover:opacity-70 transition-opacity;
+  }
 }
 
-.glass-dark {
-  background: rgba(30, 19, 13, 0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(223, 155, 82, 0.2);
+/* ── Floating particle animation for Order Status ─── */
+@keyframes float {
+  0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0.3; }
+  50%  { transform: translateY(-30px) translateX(15px) scale(1.5); opacity: 0.6; }
+  100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.3; }
+}
+
+/* Slide-up animation for cart bar & drawers */
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out forwards;
+}
+
+/* Slide-left for drawers */
+@keyframes slideLeft {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+.animate-slide-left {
+  animation: slideLeft 0.35s ease-out forwards;
+}
+
+/* Fade in */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.animate-fade-in {
+  animation: fadeIn 0.3s ease forwards;
 }

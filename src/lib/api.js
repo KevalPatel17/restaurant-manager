@@ -1,8 +1,7 @@
 import { supabase } from './supabase';
 
 /**
- * Direct Supabase API Service — Serverless Architecture for Musafir Cafe
- * All database operations, realtime subscriptions, and authentication talk directly to Supabase.
+ * Direct Supabase API Service for Musafir Cafe (new-design)
  */
 
 export const api = {
@@ -50,6 +49,45 @@ export const api = {
     return data || [];
   },
 
+  createTable: async (tableData) => {
+    const { data, error } = await supabase
+      .from('tables')
+      .insert([
+        {
+          table_number: String(tableData.table_number),
+          table_label: tableData.table_label || `Table #${tableData.table_number}`,
+          is_active: true,
+        },
+      ])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  updateTable: async (id, tableData) => {
+    const { data, error } = await supabase
+      .from('tables')
+      .update(tableData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  deleteTable: async (id) => {
+    const { error } = await supabase
+      .from('tables')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return { success: true };
+  },
+
   // 2. ORDER CREATION & TRACKING
   createOrder: async (orderPayload) => {
     const { table_number, customer_name, customer_phone, items, special_instructions, payment_method } = orderPayload;
@@ -81,7 +119,6 @@ export const api = {
       .single();
 
     if (orderError) {
-      // Fallback: If customer_phone column doesn't exist yet, insert without extra fields
       if (orderError.code === 'PGRST204' || (orderError.message && orderError.message.includes('customer_phone'))) {
         const { data: retryData, error: retryError } = await supabase
           .from('orders')
@@ -158,7 +195,6 @@ export const api = {
     const { data, error } = await query;
     if (error) throw error;
 
-    // Normalize nested item records for clean UI consumption
     return (data || []).map((order) => ({
       ...order,
       items: (order.order_items || []).map((oi) => ({
@@ -208,6 +244,20 @@ export const api = {
   },
 
   updateOrderStatus: async (orderId, status) => {
+    // Notify instant local listeners (0ms cross-tab and in-tab sync)
+    if (typeof window !== 'undefined') {
+      try {
+        window.dispatchEvent(new CustomEvent('musafir:order-status', { detail: { orderId, status } }));
+        if ('BroadcastChannel' in window) {
+          const bc = new BroadcastChannel('musafir_orders_channel');
+          bc.postMessage({ type: 'ORDER_STATUS_CHANGED', orderId, status });
+          bc.close();
+        }
+      } catch (e) {
+        // ignore fallback
+      }
+    }
+
     const { data, error } = await supabase
       .from('orders')
       .update({ status, updated_at: new Date().toISOString() })

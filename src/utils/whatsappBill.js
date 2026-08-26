@@ -5,7 +5,7 @@
 
 export function generateWhatsAppBillText(order, cafeSettings = {}) {
   const cafeName = cafeSettings.cafe_name || 'MUSAFIR CAFE & ROASTERS';
-  const cafePhone = cafeSettings.cafe_phone || '+91 98765 43210';
+  const cafePhone = cafeSettings.cafe_phone || '+91 95375 33472';
   const cafeAddress = cafeSettings.cafe_address || 'Sanctuary Lane, Wanderer Street';
   const cafeGst = cafeSettings.cafe_gst || '27AABCU9603R1ZM';
 
@@ -65,10 +65,8 @@ export function sendWhatsAppBill(order, cafeSettings = {}, autoOpen = true) {
   if (!order) return null;
 
   const rawPhone = order.customer_phone || '';
-  // Clean phone number (strip spaces, dashes, parentheses)
   let cleanPhone = rawPhone.replace(/\D/g, '');
 
-  // Default to India country code 91 if 10 digits provided
   if (cleanPhone.length === 10) {
     cleanPhone = `91${cleanPhone}`;
   }
@@ -76,7 +74,6 @@ export function sendWhatsAppBill(order, cafeSettings = {}, autoOpen = true) {
   const billText = generateWhatsAppBillText(order, cafeSettings);
   const encodedMessage = encodeURIComponent(billText);
 
-  // If phone number exists, send directly to that number; otherwise open WhatsApp recipient picker
   const whatsappUrl = cleanPhone
     ? `https://wa.me/${cleanPhone}?text=${encodedMessage}`
     : `https://api.whatsapp.com/send?text=${encodedMessage}`;
