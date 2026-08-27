@@ -4,13 +4,20 @@ import Reveal from '../components/Reveal'
 function OurStory() {
   return (
     <div>
-      {/* HERO */}
-      <section className="relative w-full min-h-[70vh] overflow-hidden">
-        <img src={IMAGES.storyHeroDesktop} alt="Our Story" className="hidden md:block absolute inset-0 w-full h-full object-cover object-center" />
-        <img src={IMAGES.storyHeroMobile} alt="Our Story" className="md:hidden absolute inset-0 w-full h-full object-cover object-center" />
-        <div className="absolute inset-0 bg-black/25" />
-        <div className="relative z-10 flex items-center justify-center min-h-[70vh]">
-          <h1 className="animate-hero font-serif text-6xl font-bold text-white">Our Story</h1>
+      {/* HERO WITH FIXED/PARALLAX BACKGROUND */}
+      <section
+        className="relative w-full min-h-[60vh] md:min-h-[70vh] bg-fixed bg-cover bg-center bg-no-repeat flex items-center justify-center text-center overflow-hidden"
+        style={{
+          backgroundImage: `url(${IMAGES.storyHeroDesktop})`,
+        }}
+      >
+        <div className="relative z-10 flex flex-col items-center justify-center px-6">
+          <h1 className="animate-hero font-serif text-5xl sm:text-6xl md:text-7xl font-bold text-white tracking-tight drop-shadow">
+            Our Story
+          </h1>
+          <p className="animate-hero-delay-1 font-sans font-light text-white/90 text-base sm:text-lg mt-3 max-w-lg">
+            A heartfelt journey of coffee, community, and slow living.
+          </p>
         </div>
       </section>
 
@@ -34,8 +41,11 @@ function OurStory() {
         </div>
       </section>
 
-      {/* FULL WIDTH IMAGE */}
-      <img src={IMAGES.storyPhoto2} alt="Musafir Cafe" className="w-full h-[500px] object-cover" />
+      {/* FULL WIDTH FIXED/PARALLAX IMAGE BREAK */}
+      <div
+        className="w-full h-[360px] md:h-[500px] bg-fixed bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${IMAGES.storyPhoto2})` }}
+      />
 
       {/* MUSAFIR CAFE STORY */}
       <section className="bg-[#FAF8F4] py-20 px-6 text-center max-w-2xl mx-auto">
@@ -73,8 +83,11 @@ function OurStory() {
         </Reveal>
       </section>
 
-      {/* FINAL PHOTO */}
-      <img src={IMAGES.storyPhoto4} alt="Musafir Cafe Atmosphere" className="w-full h-[500px] object-cover" />
+      {/* FINAL FULL WIDTH FIXED/PARALLAX IMAGE BREAK */}
+      <div
+        className="w-full h-[360px] md:h-[500px] bg-fixed bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${IMAGES.storyPhoto4})` }}
+      />
     </div>
   )
 }

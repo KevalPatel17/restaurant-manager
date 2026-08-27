@@ -32,7 +32,7 @@ export default function BillInvoiceModal({ isOpen, onClose, order, onStatusUpdat
 
     try {
       await whatsappApi.sendOneTimeBill(orderWithPhone, cafeSettings);
-      toast.success(`Digital Bill sent to +${phoneToSend} from +91 9537533472!`);
+      toast.success(`Digital Bill sent to +${phoneToSend} from +91 7555417487!`);
       setPhonePrompt(false);
     } catch (err) {
       toast.error('Failed to send WhatsApp message');
@@ -91,8 +91,8 @@ export default function BillInvoiceModal({ isOpen, onClose, order, onStatusUpdat
             
             {/* Cafe Brand Header */}
             <div className="text-center space-y-1.5 border-b-2 border-dashed border-border pb-5">
-              <div className="w-12 h-12 rounded-full overflow-hidden border border-border mx-auto mb-1 p-0.5 bg-white">
-                <img src="/logo.jpg" alt="Logo" className="w-full h-full object-contain" />
+              <div className="w-14 h-14 rounded-full overflow-hidden mx-auto mb-1">
+                <img src="/newlg.png" alt="Logo" className="w-full h-full object-contain" />
               </div>
               <h2 className="font-serif text-2xl font-black text-[#1E130D] tracking-tight">
                 {cafeSettings.cafe_name || 'Musafir Cafe'}
@@ -101,7 +101,7 @@ export default function BillInvoiceModal({ isOpen, onClose, order, onStatusUpdat
                 {cafeSettings.cafe_address || 'Sanctuary Lane, Wanderer Street'}
               </p>
               <p className="text-muted text-[10px]">
-                Phone: {cafeSettings.cafe_phone || '+91 95375 33472'} • GSTIN: {cafeSettings.cafe_gst || '27AABCU9603R1ZM'}
+                Phone: {cafeSettings.cafe_phone || '+91 75554 17487'} • GSTIN: {cafeSettings.cafe_gst || '27AABCU9603R1ZM'}
               </p>
             </div>
 
@@ -157,10 +157,10 @@ export default function BillInvoiceModal({ isOpen, onClose, order, onStatusUpdat
                         )}
                       </td>
                       <td className="py-2 text-right text-muted font-mono">
-                        ${Number(item.price_at_order || item.price || 0).toFixed(2)}
+                        ₹{Number(item.price_at_order || item.price || 0).toFixed(2)}
                       </td>
                       <td className="py-2 text-right font-bold text-[#1E130D] font-mono">
-                        ${(Number(item.price_at_order || item.price || 0) * item.quantity).toFixed(2)}
+                        ₹{(Number(item.price_at_order || item.price || 0) * item.quantity).toFixed(2)}
                       </td>
                     </tr>
                   ))}
@@ -172,16 +172,16 @@ export default function BillInvoiceModal({ isOpen, onClose, order, onStatusUpdat
             <div className="border-t-2 border-dashed border-border pt-3 space-y-1.5 text-xs">
               <div className="flex justify-between text-muted">
                 <span>Items Subtotal</span>
-                <span className="font-mono">${subtotal}</span>
+                <span className="font-mono">₹{subtotal}</span>
               </div>
               <div className="flex justify-between text-muted">
                 <span>Cafe GST / Service Tax (5%)</span>
-                <span className="font-mono">${tax}</span>
+                <span className="font-mono">₹{tax}</span>
               </div>
               <div className="flex justify-between text-base font-black text-[#1E130D] pt-2 border-t border-border">
                 <span>Total Amount Due</span>
                 <span className="font-serif text-lg text-green font-black font-mono">
-                  ${Number(order.total).toFixed(2)}
+                  ₹{Number(order.total).toFixed(2)}
                 </span>
               </div>
             </div>
@@ -209,7 +209,7 @@ export default function BillInvoiceModal({ isOpen, onClose, order, onStatusUpdat
                 <div className="flex gap-2">
                   <input
                     type="tel"
-                    placeholder="e.g. 9537533472"
+                    placeholder="e.g. 7555417487"
                     value={inputPhone}
                     onChange={(e) => setInputPhone(e.target.value)}
                     className="flex-1 px-3 py-1.5 text-xs rounded-xl border border-border bg-white font-mono"

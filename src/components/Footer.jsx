@@ -22,7 +22,7 @@ function Footer() {
           {/* Visit Us */}
           <p className="text-white font-sans font-bold text-[13px]">Visit Us</p>
           <p className="text-white/70 font-sans font-light text-[13px]">Sanctuary Lane, Old Town Arts District</p>
-          <p className="text-white/70 font-sans font-light text-[13px] mb-4">+91 95375 33472</p>
+          <p className="text-white/70 font-sans font-light text-[13px] mb-4">+91 75554 17487</p>
 
           {/* Store Hours */}
           <p className="text-white font-sans font-bold text-[13px]">Store Hours</p>
@@ -45,9 +45,10 @@ function Footer() {
           <div className="flex flex-col gap-2">
             <Link to="/menu" className="text-white/70 font-sans font-light text-sm hover:text-white transition-colors">Our Menu</Link>
             <Link to="/our-story" className="text-white/70 font-sans font-light text-sm hover:text-white transition-colors">Our Story</Link>
-            <a href="#" className="text-white/70 font-sans font-light text-sm hover:text-white transition-colors">Artisanal Brews</a>
-            <a href="#" className="text-white/70 font-sans font-light text-sm hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="text-white/70 font-sans font-light text-sm hover:text-white transition-colors">Terms of Service</a>
+            <Link to="/gallery" className="text-white/70 font-sans font-light text-sm hover:text-white transition-colors">Our Gallery</Link>
+            <Link to="/cookies" className="text-white/70 font-sans font-light text-sm hover:text-white transition-colors">Artisan Cookies</Link>
+            <Link to="/privacy-policy" className="text-white/70 font-sans font-light text-sm hover:text-white transition-colors">Privacy Policy</Link>
+            <Link to="/terms-of-service" className="text-white/70 font-sans font-light text-sm hover:text-white transition-colors">Terms of Service</Link>
             <Link to="/login" className="text-white/90 font-sans font-semibold text-sm hover:text-white transition-colors flex items-center gap-1.5 pt-2 border-t border-white/10 mt-1">
               <span>Staff &amp; Admin Login ➔</span>
             </Link>

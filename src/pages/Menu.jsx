@@ -6,47 +6,143 @@ import { api } from '../lib/api'
 import { supabase, isSupabaseReady } from '../lib/supabase'
 import { useCart } from '../context/CartContext'
 import foodImg from '../assets/images/food.png'
-import { ShoppingBag, ArrowRight } from 'lucide-react'
+import {
+  ShoppingBag,
+  ArrowRight,
+  Sparkles,
+  Gift,
+  Coffee,
+  Leaf,
+  Utensils,
+  Cookie,
+  Sandwich,
+  UtensilsCrossed,
+  Pizza,
+  Cake,
+  GlassWater,
+} from 'lucide-react'
+import CustomerCaptureModal from '../components/CustomerCaptureModal'
+import RewardRedemptionModal from '../components/RewardRedemptionModal'
 
-// Curated high-resolution fallback photos for category cards matching the aesthetic
+// Curated high-resolution photos and concise descriptions matching reference design
 const DEFAULT_CATEGORY_DATA = [
   {
-    id: 'food',
-    name: 'Food Menu',
-    description:
-      'Our menu includes a fresh all day breakfast with items like soldiers and dippy eggs, a hearty porridge and famous scrambled eggs. Our toasties, soups and salads are yummy! Our peanut butter is delicious and our granola is legendary!',
-    photo_url: 'https://www.gingerandwhite.com/cdn/shop/files/eggs-sourdough.jpg?v=1692816641',
-    download_btn_text: 'Download Food Menu',
-    pdf_url: '#',
-  },
-  {
     id: 'coffee',
-    name: 'Coffee Menu',
-    description:
-      'At Musafir Cafe, we use single-origin artisanal blends. Hand-roasted in small, artful batches by skilled roasters who care deeply about taste, aroma, and provenance.',
-    photo_url: 'https://www.gingerandwhite.com/cdn/shop/files/hot-chocolate.jpg?v=1692819145',
-    download_btn_text: 'Download Coffee Menu',
-    pdf_url: '#',
+    name: 'COFFEE',
+    description: 'From classic brews to specialty creations, made with passion.',
+    photo_url: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=800&q=80',
+    download_btn_text: 'EXPLORE COFFEE ➔',
   },
   {
-    id: 'cakes',
-    name: 'Cakes & Bakes',
-    description:
-      'Our cakes are freshly made by us every single morning in our kitchen. Nothing stays around for very long! Flaky cinnamon buns, rich brownies, and signature tea cakes.',
-    photo_url: 'https://www.gingerandwhite.com/cdn/shop/files/cake_9100f966-639e-427f-ae81-17f6708a0ecf.jpg?v=1692818921',
-    download_btn_text: 'Download Cakes & Bakes Menu',
-    pdf_url: '#',
+    id: 'tea',
+    name: 'TEA',
+    description: 'A perfect blend of aroma, taste and wellness in every sip.',
+    photo_url: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80',
+    download_btn_text: 'EXPLORE TEA ➔',
   },
   {
-    id: 'kids',
-    name: 'Kids Menu',
-    description:
-      'Kids are the joy of our cafe and we have created a special menu based on lots of experience! Delicious mini dippy eggs, crispy fish finger sandwiches, and creamy babyccinos.',
-    photo_url: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1000&q=80',
-    download_btn_text: 'Download Kids Menu',
-    pdf_url: '#',
+    id: 'breakfast',
+    name: 'BREAKFAST',
+    description: 'Wholesome and delicious start to your perfect day.',
+    photo_url: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=800&q=80',
+    download_btn_text: 'EXPLORE BREAKFAST ➔',
+  },
+  {
+    id: 'snacks',
+    name: 'SNACKS',
+    description: 'Light bites and tasty treats to keep you going.',
+    photo_url: 'https://images.unsplash.com/photo-1576107232684-1279f3908594?auto=format&fit=crop&w=800&q=80',
+    download_btn_text: 'EXPLORE SNACKS ➔',
+  },
+  {
+    id: 'sandwiches',
+    name: 'SANDWICHES',
+    description: 'Artisanal grilled sourdough sandwiches and gourmet toasties.',
+    photo_url: '/food/gallery-13.jpg',
+    download_btn_text: 'EXPLORE SANDWICHES ➔',
+  },
+  {
+    id: 'pasta',
+    name: 'PASTA',
+    description: 'Authentic Italian pastas tossed in rich savory sauces.',
+    photo_url: '/food/gallery-17.jpg',
+    download_btn_text: 'EXPLORE PASTA ➔',
+  },
+  {
+    id: 'pizza',
+    name: 'PIZZA',
+    description: 'Hand-tossed wood-fired pizzas with fresh mozzarella & toppings.',
+    photo_url: '/food/gallery-6.jpg',
+    download_btn_text: 'EXPLORE PIZZA ➔',
+  },
+  {
+    id: 'desserts',
+    name: 'DESSERTS',
+    description: 'Decadent brownies, waffles, cakes, and artisan sweets.',
+    photo_url: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=800&q=80',
+    download_btn_text: 'EXPLORE DESSERTS ➔',
+  },
+  {
+    id: 'cold-beverages',
+    name: 'COLD BEVERAGES',
+    description: 'Chilled cold brews, blended frappes, and refreshing shakes.',
+    photo_url: '/food/gallery-2.jpg',
+    download_btn_text: 'EXPLORE COLD BEVERAGES ➔',
+  },
+  {
+    id: 'mocktails',
+    name: 'MOCKTAILS',
+    description: 'Signature handcrafted coolers, spritzers, and fusions.',
+    photo_url: '/food/gallery-3.jpg',
+    download_btn_text: 'EXPLORE MOCKTAILS ➔',
+  },
+  {
+    id: 'combos',
+    name: 'COMBOS',
+    description: 'Curated meal combinations and chef special platters.',
+    photo_url: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=80',
+    download_btn_text: 'EXPLORE COMBOS ➔',
   },
 ]
+
+// Category icon resolver
+function getCategoryIcon(name) {
+  const lower = (name || '').toLowerCase()
+  if (lower.includes('coffee') || lower.includes('espresso')) {
+    return <Coffee className="w-5 h-5 text-[#B87A44]" />
+  }
+  if (lower.includes('tea') || lower.includes('matcha') || lower.includes('chai')) {
+    return <Leaf className="w-5 h-5 text-[#B87A44]" />
+  }
+  if (lower.includes('breakfast') || lower.includes('brunch') || lower.includes('egg')) {
+    return <Utensils className="w-5 h-5 text-[#B87A44]" />
+  }
+  if (lower.includes('snack') || lower.includes('fry') || lower.includes('fries')) {
+    return <Cookie className="w-5 h-5 text-[#B87A44]" />
+  }
+  if (lower.includes('sandwich') || lower.includes('panini') || lower.includes('toastie')) {
+    return <Sandwich className="w-5 h-5 text-[#B87A44]" />
+  }
+  if (lower.includes('pasta') || lower.includes('spaghetti')) {
+    return <UtensilsCrossed className="w-5 h-5 text-[#B87A44]" />
+  }
+  if (lower.includes('pizza')) {
+    return <Pizza className="w-5 h-5 text-[#B87A44]" />
+  }
+  if (lower.includes('dessert') || lower.includes('cake') || lower.includes('bake') || lower.includes('waffle')) {
+    return <Cake className="w-5 h-5 text-[#B87A44]" />
+  }
+  if (lower.includes('cold') || lower.includes('smoothie') || lower.includes('shake') || lower.includes('frappe')) {
+    return <GlassWater className="w-5 h-5 text-[#B87A44]" />
+  }
+  if (lower.includes('mocktail') || lower.includes('cooler') || lower.includes('mojito')) {
+    return <Sparkles className="w-5 h-5 text-[#B87A44]" />
+  }
+  if (lower.includes('combo')) {
+    return <Gift className="w-5 h-5 text-[#B87A44]" />
+  }
+  return <Coffee className="w-5 h-5 text-[#B87A44]" />
+}
 
 // Smart image resolver based on category name
 function getCategoryImage(cat) {
@@ -55,34 +151,51 @@ function getCategoryImage(cat) {
 
   const lower = (cat.name || '').toLowerCase()
   if (lower.includes('coffee') || lower.includes('brew') || lower.includes('espresso')) {
-    return 'https://www.gingerandwhite.com/cdn/shop/files/hot-chocolate.jpg?v=1692819145'
+    return 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=800&q=80'
   }
-  if (lower.includes('tea') || lower.includes('matcha')) {
-    return 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=1000&q=80'
+  if (lower.includes('tea') || lower.includes('matcha') || lower.includes('chai')) {
+    return 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80'
   }
-  if (lower.includes('cake') || lower.includes('bake') || lower.includes('dessert') || lower.includes('bakery')) {
-    return 'https://www.gingerandwhite.com/cdn/shop/files/cake_9100f966-639e-427f-ae81-17f6708a0ecf.jpg?v=1692818921'
+  if (lower.includes('breakfast') || lower.includes('brunch') || lower.includes('egg')) {
+    return 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=800&q=80'
   }
-  if (lower.includes('sandwich') || lower.includes('bite') || lower.includes('panini')) {
-    return 'https://www.gingerandwhite.com/cdn/shop/files/Sandwich---Salt-Beef.jpg?v=1701193533'
+  if (lower.includes('snack') || lower.includes('fry') || lower.includes('fries') || lower.includes('nacho')) {
+    return 'https://images.unsplash.com/photo-1576107232684-1279f3908594?auto=format&fit=crop&w=800&q=80'
   }
-  if (lower.includes('kid')) {
-    return 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1000&q=80'
+  if (lower.includes('sandwich') || lower.includes('panini') || lower.includes('toastie')) {
+    return '/food/gallery-13.jpg'
   }
-  // Default: Dippy eggs & brunch
-  return 'https://www.gingerandwhite.com/cdn/shop/files/eggs-sourdough.jpg?v=1692816641'
+  if (lower.includes('pasta') || lower.includes('spaghetti') || lower.includes('penne')) {
+    return '/food/gallery-17.jpg'
+  }
+  if (lower.includes('pizza')) {
+    return '/food/gallery-6.jpg'
+  }
+  if (lower.includes('dessert') || lower.includes('cake') || lower.includes('bake') || lower.includes('waffle')) {
+    return 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=800&q=80'
+  }
+  if (lower.includes('cold') || lower.includes('smoothie') || lower.includes('shake') || lower.includes('frappe')) {
+    return '/food/gallery-2.jpg'
+  }
+  if (lower.includes('mocktail') || lower.includes('cooler') || lower.includes('mojito')) {
+    return '/food/gallery-3.jpg'
+  }
+  if (lower.includes('combo')) {
+    return 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=80'
+  }
+  return 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=800&q=80'
 }
 
-// Single Category Showcase Card (Matching reference design)
+// Single Category Showcase Card (Matching exact reference design: 2 per line, horizontal split)
 function CategoryShowcaseCard({ category }) {
   const navigate = useNavigate()
   const { tableNumber } = useCart()
   const imageUrl = getCategoryImage(category)
-  const categoryName = category.name || 'Menu'
-  const buttonText = category.download_btn_text || `Explore ${categoryName} ➔`
+  const categoryName = (category.name || 'Menu').toUpperCase()
+  const icon = getCategoryIcon(category.name)
   const description =
     category.description ||
-    'Our handcrafted artisanal selection made fresh every morning with organic and locally sourced ingredients.'
+    'Handcrafted artisanal selections made fresh every morning with organic ingredients.'
 
   const targetCategorySlug =
     category.id || encodeURIComponent((category.name || 'food').toLowerCase().replace(/\s+/g, '-'))
@@ -94,41 +207,47 @@ function CategoryShowcaseCard({ category }) {
   return (
     <div
       onClick={handleOpenListing}
-      className="w-full bg-white border-2 md:border-[2.5px] border-[#1C1C1C] rounded-xl md:rounded-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2 shadow-sm transition-all duration-300 hover:shadow-xl hover:border-black md:h-[315px] cursor-pointer group"
+      className="w-full bg-white border border-[#E8E2D9] rounded-2xl overflow-hidden grid grid-cols-2 h-[180px] sm:h-[195px] md:h-[205px] shadow-xs hover:shadow-xl hover:border-[#1C1C1C]/40 transition-all duration-300 cursor-pointer group"
     >
-      {/* Left Column: Title, Description, Explore Button */}
-      <div className="p-6 sm:p-8 md:p-9 lg:p-10 flex flex-col justify-between items-start text-left bg-white order-2 md:order-1 h-full overflow-hidden">
+      {/* Left Column: Icon + Title, Concise Description, Explore Button */}
+      <div className="p-4 sm:p-5 md:p-6 flex flex-col justify-between items-start text-left bg-white h-full overflow-hidden">
         <div>
-          <h2 className="font-serif text-2xl sm:text-3xl md:text-[34px] lg:text-[38px] font-normal text-[#1C1C1C] leading-tight tracking-normal group-hover:text-green transition-colors">
-            {categoryName}
-          </h2>
-          <p className="font-sans font-light text-muted text-xs sm:text-sm md:text-[13.5px] leading-relaxed max-w-md line-clamp-2 md:line-clamp-3 mt-2.5">
+          {/* Icon + Title Header */}
+          <div className="flex items-center space-x-2">
+            <span className="shrink-0">{icon}</span>
+            <h2 className="font-serif text-base sm:text-lg md:text-[19px] font-bold text-[#1C1C1C] tracking-wide group-hover:text-[#B87A44] transition-colors truncate">
+              {categoryName}
+            </h2>
+          </div>
+
+          <p className="font-sans font-light text-muted text-xs sm:text-[12px] leading-relaxed line-clamp-2 mt-2">
             {description}
           </p>
         </div>
 
-        <div className="pt-3 shrink-0">
+        <div className="pt-2 shrink-0">
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation()
               handleOpenListing()
             }}
-            className="bg-[#1C1C1C] group-hover:bg-green hover:!bg-black text-white font-sans text-xs sm:text-sm font-medium px-7 py-3 rounded-full transition-all duration-200 inline-flex items-center space-x-2 shadow-sm active:scale-[0.98]"
+            className="bg-[#1C1C1C] hover:bg-black group-hover:bg-[#1C1C1C] text-[#D4A373] group-hover:text-[#E8C547] font-sans text-[10px] sm:text-[10.5px] font-bold tracking-wider uppercase px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full transition-all duration-200 inline-flex items-center space-x-1.5 shadow-xs active:scale-95 cursor-pointer"
           >
-            <span>{buttonText}</span>
+            <span>EXPLORE {categoryName}</span>
+            <span className="text-xs">➔</span>
           </button>
         </div>
       </div>
 
       {/* Right Column: High-Res Category Image */}
-      <div className="w-full h-56 sm:h-64 md:h-full overflow-hidden bg-[#FAF8F4] order-1 md:order-2 border-b-2 md:border-b-0 md:border-l-2 md:border-l-[2.5px] border-[#1C1C1C]">
+      <div className="w-full h-full overflow-hidden bg-[#FAF8F4] relative">
         <img
           src={imageUrl}
           alt={categoryName}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           onError={(e) => {
-            e.target.src = 'https://www.gingerandwhite.com/cdn/shop/files/eggs-sourdough.jpg?v=1692816641'
+            e.target.src = 'https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=800&q=80'
           }}
         />
       </div>
@@ -138,7 +257,16 @@ function CategoryShowcaseCard({ category }) {
 
 function Menu() {
   const [searchParams] = useSearchParams()
-  const { cartCount, cartTotal, setIsCartOpen, tableNumber, setTableNumber } = useCart()
+  const {
+    cartCount,
+    cartTotal,
+    setIsCartOpen,
+    tableNumber,
+    setTableNumber,
+    customerSession,
+    setIsCustomerCaptureOpen,
+    setIsRewardModalOpen,
+  } = useCart()
   const [categories, setCategories] = useState(DEFAULT_CATEGORY_DATA)
   const [loading, setLoading] = useState(true)
 
@@ -149,12 +277,16 @@ function Menu() {
       if (tableParam !== tableNumber) {
         setTableNumber(tableParam)
       }
+      // Trigger Customer Capture if not identified and not skipped
+      if (!customerSession.isIdentified && !customerSession.isGuest) {
+        setIsCustomerCaptureOpen(true)
+      }
     } else {
       if (tableNumber) {
         setTableNumber(null)
       }
     }
-  }, [searchParams, tableNumber, setTableNumber])
+  }, [searchParams, tableNumber, setTableNumber, customerSession, setIsCustomerCaptureOpen])
 
   // Fetch dynamic categories from Supabase
   const loadDynamicCategories = async () => {
@@ -191,13 +323,37 @@ function Menu() {
   return (
     <div className="bg-[#FAF8F4] min-h-screen pb-20">
 
-      {/* HERO BANNER */}
-      <section className="relative min-h-[340px] md:min-h-[380px] flex flex-col items-center justify-center text-center px-6 overflow-hidden bg-green">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${foodImg})` }}
-        />
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-[0.5px]" />
+      {/* HERO BANNER WITH FIXED/PARALLAX BACKGROUND */}
+      <section
+        className="relative bg-fixed bg-cover bg-center bg-no-repeat min-h-[340px] md:min-h-[380px] flex flex-col items-center justify-center text-center px-6 overflow-hidden"
+        style={{
+          backgroundImage: `url(${foodImg})`,
+        }}
+      >
+        {/* Floating Loyalty Pill Badge in Hero Top-Left (Mobile Responsive) */}
+        {customerSession.isIdentified && (
+          <div className="absolute top-3.5 sm:top-6 md:top-8 left-3 sm:left-6 md:left-12 lg:left-20 max-w-[calc(100vw-24px)] z-20 animate-fade-in">
+            <div className="inline-flex items-center gap-1.5 sm:gap-2.5 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-black/75 backdrop-blur-md border border-white/20 text-white text-[10.5px] sm:text-xs font-sans shadow-xl max-w-full">
+              <span className="text-white/90 truncate flex items-center gap-1">
+                <span>Welcome,</span>
+                <strong className="text-white font-medium max-w-[85px] sm:max-w-[150px] truncate inline-block align-bottom">
+                  {customerSession.name}
+                </strong>
+                <span className="text-white/40">•</span>
+                <span className="text-[#E0A96D] font-bold shrink-0">⭐ {customerSession.travel_tokens}</span>
+                <span className="hidden xs:inline text-white/80">Tokens</span>
+              </span>
+              {customerSession.travel_tokens > 0 && (
+                <button
+                  onClick={() => setIsRewardModalOpen(true)}
+                  className="shrink-0 px-2 sm:px-2.5 py-0.5 rounded-full bg-[#D4A373] hover:bg-[#c49260] text-[#1C1C1C] text-[9.5px] sm:text-[10px] font-bold uppercase tracking-wider transition-transform active:scale-95 cursor-pointer shadow-sm ml-0.5"
+                >
+                  REDEEM
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         <div className="relative z-10 max-w-2xl mx-auto">
           {tableNumber ? (
@@ -218,13 +374,15 @@ function Menu() {
         </div>
       </section>
 
-      {/* CATEGORY SHOWCASE LISTING */}
-      <section className="max-w-[1240px] mx-auto px-6 py-14 sm:py-20 space-y-10 sm:space-y-12">
-        {categories.map((category) => (
-          <Reveal key={category.id || category.name} delay={100}>
-            <CategoryShowcaseCard category={category} />
-          </Reveal>
-        ))}
+      {/* CATEGORY SHOWCASE LISTING (2 PER LINE GRID) */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+          {categories.map((category) => (
+            <Reveal key={category.id || category.name} delay={10}>
+              <CategoryShowcaseCard category={category} />
+            </Reveal>
+          ))}
+        </div>
       </section>
 
       {/* STICKY FLOATING BOTTOM CART BAR */}
@@ -243,7 +401,7 @@ function Menu() {
                   View Your Order • Table #{tableNumber || '1'}
                 </p>
                 <p className="text-xs text-white/80 font-serif">
-                  ${cartTotal.toFixed(2)} Total
+                  ₹{cartTotal.toFixed(2)} Total
                 </p>
               </div>
             </div>
@@ -277,6 +435,10 @@ function Menu() {
           </a>
         </Reveal>
       </section>
+
+      {/* CUSTOMER CAPTURE & REWARD MODALS */}
+      <CustomerCaptureModal />
+      <RewardRedemptionModal />
 
     </div>
   )

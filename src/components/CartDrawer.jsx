@@ -15,6 +15,8 @@ import {
   Clock,
   Bike,
   MapPin,
+  Gift,
+  Award,
 } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { api } from '../lib/api'
@@ -36,12 +38,15 @@ export default function CartDrawer() {
     tablesList,
     customerInfo,
     setCustomerInfo,
+    customerSession,
+    tokenRules,
+    awardOrderTokens,
   } = useCart()
 
   // Order Type: 'dine_in' (Eat In) | 'takeaway' (Pickup) | 'delivery' (Home Delivery)
   const [orderType, setOrderType] = useState(() => (tableNumber ? 'dine_in' : 'delivery'))
-  const [guestName, setGuestName] = useState(customerInfo?.name || '')
-  const [guestPhone, setGuestPhone] = useState(customerInfo?.phone || '')
+  const [guestName, setGuestName] = useState(customerSession?.name || customerInfo?.name || '')
+  const [guestPhone, setGuestPhone] = useState(customerSession?.mobile || customerInfo?.phone || '')
   const [deliveryAddress, setDeliveryAddress] = useState('')
   const [specialNotes, setSpecialNotes] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -54,7 +59,22 @@ export default function CartDrawer() {
     }
   }, [tableNumber])
 
+  // Sync customer session values if identified
+  useEffect(() => {
+    if (customerSession?.isIdentified) {
+      if (customerSession.name && !guestName) setGuestName(customerSession.name)
+      if (customerSession.mobile && !guestPhone) setGuestPhone(customerSession.mobile)
+    }
+  }, [customerSession])
+
   if (!isCartOpen) return null
+
+  // Calculate tokens to be earned on this order
+  const sortedRules = [...(tokenRules || [])].sort(
+    (a, b) => Number(b.min_order_amount) - Number(a.min_order_amount)
+  )
+  const matchedRule = sortedRules.find((r) => Number(cartTotal) >= Number(r.min_order_amount))
+  const tokensToEarn = matchedRule ? Number(matchedRule.tokens_awarded) : 0
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault()
@@ -70,9 +90,16 @@ export default function CartDrawer() {
 
     setIsSubmitting(true)
     try {
+      const activeMobile = customerSession.isIdentified
+        ? customerSession.mobile
+        : guestPhone.trim() || null
+      const activeName = customerSession.isIdentified
+        ? customerSession.name
+        : guestName.trim() || 'Musafir Online Customer'
+
       // Save customer info if provided
-      if (guestName || guestPhone) {
-        setCustomerInfo({ name: guestName, phone: guestPhone })
+      if (activeName || activeMobile) {
+        setCustomerInfo({ name: activeName, phone: activeMobile })
       }
 
       let orderTableLabel = 'Online Delivery'
@@ -91,12 +118,15 @@ export default function CartDrawer() {
 
       const orderPayload = {
         table_number: orderTableLabel,
-        customer_name: guestName.trim() || 'Musafir Online Customer',
-        customer_phone: guestPhone.trim() || '',
+        customer_name: activeName,
+        customer_phone: activeMobile,
+        customer_mobile: activeMobile,
         items: cart.map((item) => ({
           id: item.id,
           name: item.name,
           price: item.price,
+          original_price: item.original_price || item.price || 0,
+          is_reward_redemption: Boolean(item.isReward || item.is_reward_redemption),
           quantity: item.quantity,
           customization: item.customization || '',
         })),
@@ -113,6 +143,9 @@ export default function CartDrawer() {
 
       const newOrder = await api.createOrder(orderPayload)
 
+      // Award Travel Tokens to the active customer phone
+      const earned = await awardOrderTokens(cartTotal, activeMobile)
+
       // Fire confetti celebration 🎉
       confetti({
         particleCount: 90,
@@ -127,6 +160,12 @@ export default function CartDrawer() {
         toast.success('Pickup order placed successfully!')
       } else {
         toast.success(`Order placed for Table #${tableNumber || '1'}!`)
+      }
+
+      if (earned > 0) {
+        toast.success(`⭐ +${earned} Travel Tokens credited to your balance!`, {
+          duration: 5000,
+        })
       }
 
       setCompletedOrder(
@@ -213,7 +252,7 @@ export default function CartDrawer() {
                 <div className="flex justify-between items-center">
                   <span className="text-muted">Total Amount:</span>
                   <span className="font-serif font-bold text-base text-[#1C1C1C]">
-                    ${Number(completedOrder.total || cartTotal).toFixed(2)}
+                    ₹{Number(completedOrder.total || cartTotal).toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -227,7 +266,7 @@ export default function CartDrawer() {
               </p>
 
               <a
-                href="/order-status"
+                href={`/my-order/${completedOrder.id || completedOrder.order_number || ''}`}
                 onClick={handleClose}
                 className="w-full py-3.5 rounded-full bg-green hover:bg-green-dark text-white font-sans text-xs font-bold uppercase tracking-wider transition-all shadow-md active:scale-[0.98] flex items-center justify-center space-x-2"
               >
@@ -427,7 +466,11 @@ export default function CartDrawer() {
                         return (
                           <div
                             key={item.cartKey || item.id}
-                            className="bg-white p-3 rounded-2xl border border-border flex items-center justify-between gap-3 shadow-sm"
+                            className={`p-3 rounded-2xl border flex items-center justify-between gap-3 shadow-sm ${
+                              item.isReward
+                                ? 'bg-amber-50/40 border-amber-300 ring-1 ring-amber-300/30'
+                                : 'bg-white border-border'
+                            }`}
                           >
                             <img
                               src={itemImg}
@@ -436,12 +479,31 @@ export default function CartDrawer() {
                             />
                             
                             <div className="flex-1 min-w-0">
+                              {item.isReward && (
+                                <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-md bg-amber-100 border border-amber-200 text-amber-900 text-[9.5px] font-bold uppercase tracking-wider mb-0.5">
+                                  <Gift className="w-2.5 h-2.5 text-amber-700" />
+                                  <span>Travel Reward</span>
+                                </span>
+                              )}
                               <h4 className="font-serif font-bold text-xs text-[#1C1C1C] truncate">
                                 {item.name}
                               </h4>
-                              <p className="text-[11px] font-bold text-green mt-0.5">
-                                ${Number(item.price || 0).toFixed(2)}
-                              </p>
+                              {item.isReward ? (
+                                <div className="flex items-center space-x-1.5 mt-0.5">
+                                  <span className="text-[11px] font-bold text-green font-mono">
+                                    ₹0.00 (FREE)
+                                  </span>
+                                  {Number(item.original_price || 0) > 0 && (
+                                    <span className="text-[10px] text-muted line-through">
+                                      ₹{Number(item.original_price).toFixed(2)}
+                                    </span>
+                                  )}
+                                </div>
+                              ) : (
+                                <p className="text-[11px] font-bold text-green mt-0.5">
+                                  ₹{Number(item.price || 0).toFixed(2)}
+                                </p>
+                              )}
                             </div>
 
                             {/* Quantity Adjusters */}
@@ -455,12 +517,14 @@ export default function CartDrawer() {
                               <span className="font-sans font-bold text-xs px-1.5 text-[#1C1C1C]">
                                 {item.quantity}
                               </span>
-                              <button
-                                onClick={() => updateQuantity(item.cartKey, 1)}
-                                className="w-6 h-6 rounded-lg bg-white hover:bg-border flex items-center justify-center text-xs text-[#1C1C1C] transition-colors"
-                              >
-                                <Plus className="w-3.5 h-3.5" />
-                              </button>
+                              {!item.isReward && (
+                                <button
+                                  onClick={() => updateQuantity(item.cartKey, 1)}
+                                  className="w-6 h-6 rounded-lg bg-white hover:bg-border flex items-center justify-center text-xs text-[#1C1C1C] transition-colors"
+                                >
+                                  <Plus className="w-3.5 h-3.5" />
+                                </button>
+                              )}
                             </div>
 
                             <button
@@ -480,9 +544,16 @@ export default function CartDrawer() {
                 {/* 5. GUEST INFO & SPECIAL INSTRUCTIONS */}
                 {cart.length > 0 && (
                   <div className="bg-white p-4 rounded-2xl border border-border space-y-3">
-                    <span className="text-[11px] font-bold uppercase text-[#1C1C1C] tracking-wider block">
-                      Contact Details
-                    </span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold uppercase text-[#1C1C1C] tracking-wider block">
+                        Contact Details
+                      </span>
+                      {customerSession?.isIdentified && (
+                        <span className="text-[10px] text-green font-bold bg-green/10 px-2 py-0.5 rounded-full">
+                          ⭐ Identified Traveler
+                        </span>
+                      )}
+                    </div>
 
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       <div>
@@ -527,10 +598,23 @@ export default function CartDrawer() {
               {/* Footer Summary & Place Order CTA */}
               {cart.length > 0 && (
                 <div className="p-5 bg-white border-t border-border space-y-3 shadow-lg">
+                  {/* Token Earning Alert */}
+                  {customerSession?.isIdentified && tokensToEarn > 0 && (
+                    <div className="p-2.5 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 flex items-center justify-between text-xs animate-fade-in">
+                      <div className="flex items-center space-x-1.5 text-amber-900 font-semibold">
+                        <Sparkles className="w-3.5 h-3.5 text-amber-600 animate-pulse" />
+                        <span>Travel Tokens on this Order:</span>
+                      </div>
+                      <span className="font-bold font-mono text-amber-800 bg-white px-2.5 py-0.5 rounded-lg border border-amber-200 shadow-2xs">
+                        +{tokensToEarn} Tokens
+                      </span>
+                    </div>
+                  )}
+
                   <div className="space-y-1.5 text-xs">
                     <div className="flex justify-between items-center text-muted">
                       <span>Subtotal ({cartCount} items)</span>
-                      <span className="font-bold text-[#1C1C1C]">${cartTotal.toFixed(2)}</span>
+                      <span className="font-bold text-[#1C1C1C]">₹{cartTotal.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between items-center text-muted">
                       <span>GST &amp; Taxes</span>
@@ -539,7 +623,7 @@ export default function CartDrawer() {
                     <div className="flex justify-between items-center pt-2 border-t border-border">
                       <span className="font-bold text-sm text-[#1C1C1C]">Total Payable</span>
                       <span className="font-serif font-bold text-xl text-green">
-                        ${cartTotal.toFixed(2)}
+                        ₹{cartTotal.toFixed(2)}
                       </span>
                     </div>
                   </div>

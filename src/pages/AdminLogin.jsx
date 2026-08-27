@@ -9,8 +9,8 @@ export default function AdminLogin() {
   const [searchParams] = useSearchParams();
   const redirectTarget = searchParams.get('redirect') || '/admin';
 
-  const [email, setEmail] = useState('admin@musafir.cafe');
-  const [password, setPassword] = useState('Musafir@2026');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (e) => {
@@ -47,14 +47,16 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-cream">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-cream font-sans">
       <div className="w-full max-w-md bg-white rounded-3xl p-8 sm:p-10 border border-border shadow-xl space-y-6">
-        
+
         {/* Top brand header */}
         <div className="text-center space-y-2">
-          <div className="w-14 h-14 bg-green rounded-2xl mx-auto flex items-center justify-center shadow-md">
-            <Coffee className="w-7 h-7 text-white" />
-          </div>
+          <img
+            src="/newlg.png"
+            alt="Musafir Cafe Logo"
+            className="w-16 h-16 rounded-full mx-auto shadow-md object-cover"
+          />
           <span className="text-[11px] font-sans font-bold uppercase tracking-widest text-green block">
             Management Portal
           </span>
@@ -68,7 +70,7 @@ export default function AdminLogin() {
 
         {/* Login Form */}
         <form onSubmit={handleLogin} className="space-y-4 text-xs font-sans">
-          
+
           <div>
             <label className="block text-[11px] font-bold uppercase tracking-wider text-[#1C1C1C] mb-1.5">
               Email Address
@@ -80,7 +82,7 @@ export default function AdminLogin() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@musafir.cafe"
+                placeholder="admin@gmail.com"
                 className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-cream focus:outline-none focus:ring-1 focus:ring-green text-[#1C1C1C]"
               />
             </div>

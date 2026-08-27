@@ -9,6 +9,7 @@ import {
   FiMenu,
   FiX,
 } from 'react-icons/fi'
+import { Gift } from 'lucide-react'
 import { FaFacebookF, FaInstagram, FaTwitter } from 'react-icons/fa'
 import Logo from './Logo'
 import { useCart } from '../context/CartContext'
@@ -17,6 +18,7 @@ import { useCart } from '../context/CartContext'
 const aboutLinks = [
   { name: 'Our Menu', path: '/menu' },
   { name: 'Our Story', path: '/our-story' },
+  { name: 'Gallery', path: '/gallery' },
   { name: 'Artisan Cookies', path: '/cookies' },
   { name: 'Staff Portal', path: '/login' },
 ]
@@ -25,6 +27,7 @@ const aboutLinks = [
 const navLinks = [
   { name: 'Our Menu', path: '/menu' },
   { name: 'Our Story', path: '/our-story' },
+  { name: 'Gallery', path: '/gallery' },
   { name: 'Cookies', path: '/cookies' },
 ]
 
@@ -34,7 +37,15 @@ function Navbar() {
   const [aboutOpen, setAboutOpen] = useState(false)
   const navScrollRef = useRef(null)
 
-  const { cartCount, cartTotal, setIsCartOpen, tableNumber, setTableNumber } = useCart()
+  const {
+    cartCount,
+    cartTotal,
+    setIsCartOpen,
+    tableNumber,
+    setTableNumber,
+    customerSession,
+    setIsRewardModalOpen,
+  } = useCart()
   const [searchParams] = useSearchParams()
   const location = useLocation()
 
@@ -73,9 +84,9 @@ function Navbar() {
           <FiMenu />
         </button>
 
-        {/* Center: Brand Logo */}
+        {/* Center: Brand Logo (Logo emblem hidden when mobile hamburger menu is displayed) */}
         <div className="flex-1 flex justify-center items-center gap-2">
-          <Logo text="Musafir Cafe" />
+          <Logo text="Musafir Cafe" showImage={false} />
           {tableNumber ? (
             <span className="bg-green text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
               T#{tableNumber}
@@ -98,8 +109,8 @@ function Navbar() {
         </button>
       </div>
 
-      {/* ─── 2. LARGE DESKTOP HEADER ROW 1 (hidden lg:flex) ─── */}
-      <div className="hidden lg:flex items-center justify-between px-8 xl:px-12 py-5 bg-black border-b border-white/10">
+      {/* ─── 2. LARGE DESKTOP SINGLE-ROW HEADER (hidden lg:flex) ─── */}
+      <div className="hidden lg:flex items-center justify-between px-8 xl:px-12 py-4 bg-black border-b border-white/10">
         {/* Left: Brand Logo & Order Mode Badge */}
         <div className="flex items-center gap-4">
           <Logo text="Musafir Cafe" />
@@ -113,7 +124,60 @@ function Navbar() {
           )}
         </div>
 
-        {/* Right: Account & Cart Buttons */}
+        {/* Center: Navigation Links Directly in Header */}
+        <div className="flex items-center gap-7 xl:gap-9">
+          {/* About Us with dropdown */}
+          <div
+            className="relative"
+            onMouseEnter={() => setAboutOpen(true)}
+            onMouseLeave={() => setAboutOpen(false)}
+          >
+            <button
+              onClick={() => setAboutOpen((prev) => !prev)}
+              className="flex items-center gap-1.5 text-white font-sans text-sm font-normal hover:opacity-80 transition-opacity whitespace-nowrap py-1 cursor-pointer"
+            >
+              <span>About Us</span>
+              <FiChevronDown
+                className={`text-xs ml-0.5 transition-transform duration-200 ${
+                  aboutOpen ? 'rotate-180 text-white' : ''
+                }`}
+              />
+            </button>
+
+            {/* Dropdown Menu */}
+            {aboutOpen && (
+              <div className="absolute top-full left-0 pt-2 z-50">
+                <div className="bg-[#111111] min-w-[200px] shadow-[0_12px_32px_rgba(0,0,0,0.7)] py-2 rounded-lg border border-white/15">
+                  {aboutLinks.map((item) => (
+                    <Link
+                      key={item.name}
+                      to={item.path}
+                      onClick={() => setAboutOpen(false)}
+                      className="block text-white/90 font-sans text-[13px] px-5 py-2 hover:bg-white/10 hover:text-white transition-colors"
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Main Nav Links */}
+          <nav className="flex items-center gap-7 xl:gap-9">
+            {navLinks.map((item) => (
+              <Link
+                key={item.name}
+                to={item.path}
+                className="text-white font-sans text-sm font-normal hover:opacity-80 transition-opacity whitespace-nowrap py-1"
+              >
+                {item.name}
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        {/* Right: Staff Portal & Cart Buttons */}
         <div className="flex items-center gap-3">
           {/* Account Button (Outlined Pill) */}
           <Link
@@ -130,62 +194,9 @@ function Navbar() {
             className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-white text-[#1C201D] font-sans text-sm font-semibold shadow-sm hover:bg-[#F7F4EE] transition-all cursor-pointer"
           >
             <FiShoppingCart className="text-base text-green" />
-            <span>${cartTotal.toFixed(2)} ({cartCount})</span>
+            <span>₹{cartTotal.toFixed(2)} ({cartCount})</span>
           </button>
         </div>
-      </div>
-
-      {/* ─── 3. LARGE DESKTOP SUB-NAV LINKS (hidden lg:flex) ─── */}
-      <div className="bg-black hidden lg:flex items-center justify-center px-6 xl:px-12 py-3.5 relative border-t border-white/5">
-        {/* About Us with dropdown */}
-        <div
-          className="relative mr-6 lg:mr-8"
-          onMouseEnter={() => setAboutOpen(true)}
-          onMouseLeave={() => setAboutOpen(false)}
-        >
-          <button
-            onClick={() => setAboutOpen((prev) => !prev)}
-            className="flex items-center gap-1.5 text-white font-sans text-sm font-normal hover:opacity-80 transition-opacity whitespace-nowrap py-1 cursor-pointer"
-          >
-            <span>About Us</span>
-            <FiChevronDown
-              className={`text-xs ml-0.5 transition-transform duration-200 ${
-                aboutOpen ? 'rotate-180 text-white' : ''
-              }`}
-            />
-          </button>
-
-          {/* Dropdown Menu */}
-          {aboutOpen && (
-            <div className="absolute top-full left-0 pt-2 z-50">
-              <div className="bg-[#111111] min-w-[200px] shadow-[0_12px_32px_rgba(0,0,0,0.7)] py-2 rounded-lg border border-white/15">
-                {aboutLinks.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.path}
-                    onClick={() => setAboutOpen(false)}
-                    className="block text-white/90 font-sans text-[13px] px-5 py-2 hover:bg-white/10 hover:text-white transition-colors"
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Nav Links */}
-        <nav className="flex items-center gap-6 lg:gap-8">
-          {navLinks.map((item) => (
-            <Link
-              key={item.name}
-              to={item.path}
-              className="text-white font-sans text-sm font-normal hover:opacity-80 transition-opacity whitespace-nowrap py-1"
-            >
-              {item.name}
-            </Link>
-          ))}
-        </nav>
       </div>
 
       {/* ─── 4. MOBILE & TABLET SLIDE-OUT DRAWER (Slides from LEFT) ─── */}
@@ -213,6 +224,32 @@ function Navbar() {
                 <FiX />
               </button>
             </div>
+
+            {/* Customer Loyalty Banner in Mobile Drawer */}
+            {customerSession.isIdentified && (
+              <div className="bg-[#1C1C1C] text-white p-4 border-b border-[#EAE5DC] space-y-2">
+                <div className="text-xs">
+                  👋 Welcome back, <strong className="text-white font-bold">{customerSession.name}</strong>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-white/90">
+                    ⭐ <strong className="text-[#E0A96D]">{customerSession.travel_tokens}</strong> Travel Tokens
+                  </span>
+                  {customerSession.travel_tokens > 0 && (
+                    <button
+                      onClick={() => {
+                        setMobileOpen(false)
+                        setIsRewardModalOpen(true)
+                      }}
+                      className="py-1 px-3 rounded-full bg-[#E0A96D] hover:bg-[#c99256] text-[#1C1C1C] text-[10px] font-bold uppercase tracking-wider flex items-center space-x-1 shadow-sm cursor-pointer"
+                    >
+                      <Gift className="w-3 h-3" />
+                      <span>Redeem</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Menu Items List */}
             <nav className="flex-1 overflow-y-auto divide-y divide-[#EAE5DC] text-[#2A2A2A]">

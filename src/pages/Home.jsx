@@ -1,41 +1,142 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
+import { Coffee, Play, Film, ExternalLink, X, Volume2, VolumeX } from 'lucide-react'
+import { FaInstagram, FaYoutube } from 'react-icons/fa'
 import { IMAGES } from '../constants/images'
 import Reveal from '../components/Reveal'
+import toast from 'react-hot-toast'
+import { useCart } from '../context/CartContext'
+import { api } from '../lib/api'
+
+// Helper to parse any external Reel/Shorts/Video link
+function parseReelMedia(url) {
+  if (!url) return { type: 'video', embedUrl: '', rawUrl: '', watchUrl: '' }
+  const trimmed = url.trim()
+
+  const igMatch = trimmed.match(/(?:instagram\.com|instagr\.am)\/(?:reel|p|tv)\/([a-zA-Z0-9_-]+)/)
+  if (igMatch && igMatch[1]) {
+    return {
+      type: 'instagram',
+      id: igMatch[1],
+      embedUrl: `https://www.instagram.com/reel/${igMatch[1]}/embed/captioned/`,
+      watchUrl: `https://www.instagram.com/reel/${igMatch[1]}/`,
+      rawUrl: trimmed,
+    }
+  }
+
+  const ytShortsMatch = trimmed.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/)
+  if (ytShortsMatch && ytShortsMatch[1]) {
+    return {
+      type: 'youtube',
+      id: ytShortsMatch[1],
+      embedUrl: `https://www.youtube.com/embed/${ytShortsMatch[1]}?autoplay=1&mute=0&rel=0&loop=1`,
+      watchUrl: `https://youtube.com/shorts/${ytShortsMatch[1]}`,
+      rawUrl: trimmed,
+    }
+  }
+
+  const ytStandardMatch = trimmed.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=))([a-zA-Z0-9_-]+)/)
+  if (ytStandardMatch && ytStandardMatch[1]) {
+    return {
+      type: 'youtube',
+      id: ytStandardMatch[1],
+      embedUrl: `https://www.youtube.com/embed/${ytStandardMatch[1]}?autoplay=1&mute=0&rel=0`,
+      watchUrl: `https://youtu.be/${ytStandardMatch[1]}`,
+      rawUrl: trimmed,
+    }
+  }
+
+  return {
+    type: 'video',
+    embedUrl: trimmed,
+    watchUrl: trimmed,
+    rawUrl: trimmed,
+  }
+}
 
 function Home() {
   const [email, setEmail] = useState('')
+  const { customerSession, setIsRewardModalOpen } = useCart()
+  const [socialReels, setSocialReels] = useState([])
+  const [activeReelModal, setActiveReelModal] = useState(null)
+  const [isMuted, setIsMuted] = useState(true)
+
+  useEffect(() => {
+    async function loadReels() {
+      try {
+        const data = await api.getSocialReels(true)
+        setSocialReels(data || [])
+      } catch { }
+    }
+    loadReels()
+  }, [])
 
   const handleSubscribe = (e) => {
     e.preventDefault()
-    alert('Thank you for subscribing!')
+    toast.success('Thank you for subscribing to Musafir Cafe!')
     setEmail('')
   }
 
   return (
     <div>
-      {/* SECTION 1: HERO */}
-      <section className="relative w-full min-h-[85vh] overflow-hidden flex items-center justify-center">
-        <picture>
-          <source media="(max-width: 767px)" srcSet={IMAGES.heroMobile} />
-          <img
-            src={IMAGES.heroDesktop}
-            alt="Artisanal coffee hero"
-            className="absolute inset-0 w-full h-full object-cover object-center"
-          />
-        </picture>
+      {/* SECTION 1: HERO WITH FIXED / STICKY BACKGROUND */}
+      <section
+        className="relative w-full min-h-[85vh] md:min-h-[92vh] overflow-hidden flex items-center bg-fixed bg-cover bg-right md:bg-center bg-no-repeat bg-[#1C130D]"
+        style={{ backgroundImage: `url(${IMAGES.heroDesktop})` }}
+      >
         {/* Subtle dark tint overlay */}
-        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 bg-black/25 pointer-events-none" />
 
-        <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 max-w-4xl mx-auto py-20">
-          <h1 className="animate-hero font-serif font-normal text-4xl sm:text-6xl md:text-7xl text-white leading-tight tracking-tight drop-shadow-sm">
-            Welcome to Surat
-          </h1>
-          <a
-            href="#menu"
-            className="animate-hero-delay-1 mt-7 inline-flex items-center justify-center px-8 py-3 rounded-full bg-white text-[#1C201D] font-sans font-medium text-sm shadow-lg hover:bg-[#FAF8F4] transition-all hover:scale-105 active:scale-95"
-          >
-            Shop Now
-          </a>
+        {/* Floating Loyalty Pill Badge in Hero Top-Left (Mobile Responsive) */}
+        {customerSession.isIdentified && (
+          <div className="absolute top-3.5 sm:top-6 md:top-8 left-3 sm:left-6 md:left-12 lg:left-20 max-w-[calc(100vw-24px)] z-20 animate-fade-in">
+            <div className="inline-flex items-center gap-1.5 sm:gap-2.5 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-black/75 backdrop-blur-md border border-white/20 text-white text-[10.5px] sm:text-xs font-sans shadow-xl max-w-full">
+              <span className="text-white/90 truncate flex items-center gap-1">
+                <span>Welcome,</span>
+                <strong className="text-white font-medium max-w-[85px] sm:max-w-[150px] truncate inline-block align-bottom">
+                  {customerSession.name}
+                </strong>
+                <span className="text-white/40">•</span>
+                <span className="text-[#E0A96D] font-bold shrink-0">⭐ {customerSession.travel_tokens}</span>
+                <span className="hidden xs:inline text-white/80">Tokens</span>
+              </span>
+              {customerSession.travel_tokens > 0 && (
+                <button
+                  onClick={() => setIsRewardModalOpen(true)}
+                  className="shrink-0 px-2 sm:px-2.5 py-0.5 rounded-full bg-[#D4A373] hover:bg-[#c49260] text-[#1C1C1C] text-[9.5px] sm:text-[10px] font-bold uppercase tracking-wider transition-transform active:scale-95 cursor-pointer shadow-sm ml-0.5"
+                >
+                  REDEEM
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Content Container aligned to the LEFT */}
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-10 md:px-16 lg:px-24 py-12 sm:py-16 md:py-20 flex justify-center md:justify-start">
+          <div className="max-w-xs sm:max-w-sm md:max-w-md text-center flex flex-col items-center">
+            <h1 className="animate-hero font-serif font-normal text-3xl sm:text-4xl md:text-5xl lg:text-[52px] text-white leading-tight tracking-tight drop-shadow-md">
+              Welcome to Surat
+            </h1>
+
+            {/* Coffee icon divider ornament */}
+            <div className="flex items-center justify-center gap-2.5 w-32 sm:w-40 my-2.5 sm:my-3 mx-auto">
+              <div className="h-[1px] flex-1 bg-[#D4A373]/60" />
+              <Coffee className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#D4A373]" strokeWidth={1.75} />
+              <div className="h-[1px] flex-1 bg-[#D4A373]/60" />
+            </div>
+
+            <p className="animate-hero-delay-1 font-serif font-light text-white/90 text-xs sm:text-sm md:text-[15px] leading-relaxed max-w-xs sm:max-w-sm mx-auto drop-shadow">
+              Where every cup tells a story and every moment feels like home.
+            </p>
+
+            <Link
+              to="/menu"
+              className="animate-hero-delay-1 mt-5 sm:mt-6 inline-flex items-center justify-center px-7 py-2 sm:px-8 sm:py-2.5 rounded-full bg-white text-[#1C1C1C] font-sans font-semibold text-xs sm:text-[13px] shadow-lg hover:bg-[#FAF8F4] transition-all hover:scale-105 active:scale-95 cursor-pointer"
+            >
+              Shop Now
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -267,20 +368,214 @@ function Home() {
         </div>
       </section>
 
-      {/* SECTION 12: INSTAGRAM */}
-      <section className="bg-[#FAF8F4] py-20 px-6 text-center">
+      {/* SECTION 12: SOCIAL REEL VIDEOS */}
+      <section className="bg-[#FAF8F4] py-20 px-4 sm:px-6 text-center">
         <Reveal as="h2" className="section-heading mb-3">Musafir Cafe on Social</Reveal>
-        <Reveal as="p" delay={150} className="font-sans font-light text-muted text-lg mb-8">@musafircafe</Reveal>
-        <Reveal delay={300} className="inline-block"><a href="#" className="btn-outline mb-12">Follow Us</a></Reveal>
+        <Reveal as="p" delay={150} className="font-sans font-light text-muted text-base sm:text-lg mb-6">
+          @musafircafe • Watch our latest culinary moments &amp; brewing stories
+        </Reveal>
+        <Reveal delay={250} className="inline-block mb-12">
+          <a
+            href="https://instagram.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-outline inline-flex items-center space-x-2 text-xs font-bold"
+          >
+            <FaInstagram className="w-4 h-4 text-rose-600" />
+            <span>Follow @musafircafe on Instagram</span>
+          </a>
+        </Reveal>
 
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-2 max-w-4xl mx-auto">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="aspect-square bg-border flex items-center justify-center text-4xl text-faint hover:opacity-80 cursor-pointer transition-opacity">
-              📷
-            </div>
-          ))}
+        {/* 9:16 Vertical Reel Cards Grid (Compact & Sleek) */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 max-w-4xl mx-auto">
+          {socialReels.map((reel, idx) => {
+            const media = parseReelMedia(reel.video_url);
+            return (
+              <Reveal key={reel.id || idx} delay={idx * 80}>
+                <div
+                  onClick={() => setActiveReelModal({ ...reel, media })}
+                  className="group relative aspect-[9/15] max-w-[210px] mx-auto w-full rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer bg-[#1C1C1C]"
+                >
+                  {/* Video or Thumbnail */}
+                  {media.type === 'video' ? (
+                    <video
+                      src={media.rawUrl}
+                      poster={reel.thumbnail_url || ''}
+                      muted
+                      loop
+                      playsInline
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.pause();
+                        e.currentTarget.currentTime = 0;
+                      }}
+                    />
+                  ) : reel.thumbnail_url ? (
+                    <img
+                      src={reel.thumbnail_url}
+                      alt={reel.title}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#243524] to-[#111] flex items-center justify-center">
+                      <Film className="w-8 h-8 text-white/40" />
+                    </div>
+                  )}
+
+                  {/* Gradient Vignette */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/25 pointer-events-none" />
+
+                  {/* Top Badges */}
+                  <div className="absolute top-2 inset-x-2 flex items-center justify-between z-10">
+                    <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-white text-[9px] font-bold border border-white/15">
+                      {media.type === 'instagram' ? (
+                        <>
+                          <FaInstagram className="w-2.5 h-2.5 text-rose-400" />
+                          <span>Reel</span>
+                        </>
+                      ) : media.type === 'youtube' ? (
+                        <>
+                          <FaYoutube className="w-2.5 h-2.5 text-red-500" />
+                          <span>Shorts</span>
+                        </>
+                      ) : (
+                        <>
+                          <Film className="w-2.5 h-2.5 text-[#E0A96D]" />
+                          <span>Video</span>
+                        </>
+                      )}
+                    </span>
+
+                    {reel.views_count && (
+                      <span className="px-1.5 py-0.5 rounded-full bg-black/50 backdrop-blur-xs text-white/90 text-[9px] font-mono">
+                        👁️ {reel.views_count}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Center Play Button Overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center z-10 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">
+                    <div className="w-9 h-9 rounded-full bg-white/25 backdrop-blur-md border border-white/40 flex items-center justify-center text-white shadow-lg">
+                      <Play className="w-4 h-4 fill-white ml-0.5" />
+                    </div>
+                  </div>
+
+                  {/* Bottom Title & Audio */}
+                  <div className="absolute bottom-2.5 inset-x-2.5 text-left z-10 space-y-0.5">
+                    <p className="text-[11px] font-semibold text-white leading-tight line-clamp-1 drop-shadow">
+                      {reel.title}
+                    </p>
+                    <span className="text-[9px] text-white/70 flex items-center space-x-1 truncate font-sans">
+                      <span>🎵 Musafir Original</span>
+                    </span>
+                  </div>
+                </div>
+              </Reveal>
+            );
+          })}
         </div>
       </section>
+
+      {/* FULL-SCREEN REEL PLAYER MODAL (COMPACT) */}
+      {activeReelModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-fade-in">
+          {/* Backdrop Click */}
+          <div className="absolute inset-0" onClick={() => setActiveReelModal(null)} />
+
+          {/* Modal Card */}
+          <div className="relative w-full max-w-xs sm:max-w-[340px] bg-[#1C1C1C] rounded-2xl overflow-hidden border border-white/20 shadow-2xl z-10 flex flex-col max-h-[88vh] animate-scale-up">
+            {/* Header */}
+            <div className="px-3.5 py-2.5 flex items-center justify-between border-b border-white/10 bg-black/40">
+              <div className="flex items-center space-x-2 truncate">
+                <div className="w-6 h-6 rounded-full bg-green flex items-center justify-center text-white text-[10px] font-bold">
+                  ☕
+                </div>
+                <span className="text-xs font-bold text-white truncate">@musafircafe</span>
+              </div>
+              <div className="flex items-center space-x-1.5">
+                {activeReelModal.media?.watchUrl && (
+                  <a
+                    href={activeReelModal.media.watchUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-1 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                    title="Open on Original Platform"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                )}
+                <button
+                  onClick={() => setActiveReelModal(null)}
+                  className="p-1 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Video / Embed Display */}
+            <div className="relative aspect-[9/15] w-full bg-black flex items-center justify-center overflow-hidden">
+              {activeReelModal.media?.type === 'instagram' ? (
+                <iframe
+                  src={activeReelModal.media.embedUrl}
+                  className="w-full h-full border-0"
+                  allowFullScreen
+                  title={activeReelModal.title}
+                />
+              ) : activeReelModal.media?.type === 'youtube' ? (
+                <iframe
+                  src={activeReelModal.media.embedUrl}
+                  className="w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  title={activeReelModal.title}
+                />
+              ) : (
+                <div className="relative w-full h-full">
+                  <video
+                    src={activeReelModal.media?.rawUrl}
+                    poster={activeReelModal.thumbnail_url || ''}
+                    autoPlay
+                    loop
+                    playsInline
+                    muted={isMuted}
+                    className="w-full h-full object-cover"
+                  />
+                  {/* Sound Toggle Button */}
+                  <button
+                    onClick={() => setIsMuted(!isMuted)}
+                    className="absolute bottom-3 right-3 p-2 rounded-full bg-black/60 backdrop-blur-md text-white border border-white/20 hover:bg-black/80 transition-all cursor-pointer z-20"
+                  >
+                    {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Caption & Actions Footer */}
+            <div className="p-3 bg-[#141414] border-t border-white/10 space-y-2">
+              <div>
+                <h4 className="text-xs font-bold text-white leading-snug line-clamp-2">
+                  {activeReelModal.title}
+                </h4>
+                <p className="text-[10px] text-white/60 mt-0.5 font-sans">
+                  Musafir Cafe &amp; Roasters ☕🍰
+                </p>
+              </div>
+              <div className="pt-0.5">
+                <Link
+                  to="/menu"
+                  onClick={() => setActiveReelModal(null)}
+                  className="block w-full py-2 rounded-xl bg-white text-[#1C1C1C] hover:bg-[#FAF8F4] font-bold text-xs text-center shadow transition-all cursor-pointer"
+                >
+                  Explore Cafe Menu ➔
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* SECTION 13: NEWSLETTER */}
       <section className="bg-green py-20 px-6 text-center">

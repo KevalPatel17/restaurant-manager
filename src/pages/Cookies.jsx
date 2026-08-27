@@ -55,8 +55,8 @@ const FLAVORS = [
   },
 ]
 
-const BOX_PRICE = '£22.00'
-const BOX_PRICE_NUM = 22.0
+const BOX_PRICE = '₹450'
+const BOX_PRICE_NUM = 450
 const MAX_SLOTS = 6
 
 // ─── REALISTIC VECTOR COOKIE ILLUSTRATION COMPONENT (COMPACT SIZES) ───

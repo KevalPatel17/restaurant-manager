@@ -5,7 +5,7 @@
 
 export function generateWhatsAppBillText(order, cafeSettings = {}) {
   const cafeName = cafeSettings.cafe_name || 'MUSAFIR CAFE & ROASTERS';
-  const cafePhone = cafeSettings.cafe_phone || '+91 95375 33472';
+  const cafePhone = cafeSettings.cafe_phone || '+91 75554 17487';
   const cafeAddress = cafeSettings.cafe_address || 'Sanctuary Lane, Wanderer Street';
   const cafeGst = cafeSettings.cafe_gst || '27AABCU9603R1ZM';
 
@@ -23,14 +23,14 @@ export function generateWhatsAppBillText(order, cafeSettings = {}) {
   if (order.items && order.items.length > 0) {
     itemsList = order.items
       .map((item) => {
-        const itemLine = `• *${item.quantity}x ${item.name}* — $${(Number(item.price_at_order || item.price || 0) * item.quantity).toFixed(2)}`;
+        const itemLine = `• *${item.quantity}x ${item.name}* — ₹${(Number(item.price_at_order || item.price || 0) * item.quantity).toFixed(2)}`;
         const custom = item.item_customization || item.customization;
         const customLine = custom ? `\n  _Notes: ${custom}_` : '';
         return `${itemLine}${customLine}`;
       })
       .join('\n');
   } else {
-    itemsList = `• 1x Cafe Specialty Order — $${Number(order.total || 0).toFixed(2)}`;
+    itemsList = `• 1x Cafe Specialty Order — ₹${Number(order.total || 0).toFixed(2)}`;
   }
 
   const message = `☕ *${cafeName.toUpperCase()}*
@@ -47,9 +47,9 @@ _${cafeAddress}_
 ${itemsList}
 
 ━━━━━━━━━━━━━━━━━━━━
-💵 *Subtotal:* $${subtotal}
-🧾 *Cafe Tax (5%):* $${tax}
-💰 *TOTAL AMOUNT:* $${Number(order.total || 0).toFixed(2)}
+💵 *Subtotal:* ₹${subtotal}
+🧾 *Cafe Tax (5%):* ₹${tax}
+💰 *TOTAL AMOUNT:* ₹${Number(order.total || 0).toFixed(2)}
 
 ${isPaid ? '🟢 *PAYMENT STATUS: PAID IN FULL ✓*' : '🟡 *PAYMENT STATUS: PENDING*'}
 💳 *Payment Method:* ${order.payment_method || 'Cash / GPay'}

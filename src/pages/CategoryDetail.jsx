@@ -1,66 +1,129 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { ArrowLeft, Sparkles, Loader2, Coffee, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react'
+import { ArrowLeft, Sparkles, Loader2, Coffee, Plus, Minus, ShoppingBag, ArrowRight, Gift } from 'lucide-react'
 import { api } from '../lib/api'
 import { supabase, isSupabaseReady } from '../lib/supabase'
 import { useCart } from '../context/CartContext'
 import Reveal from '../components/Reveal'
 import { IMAGES } from '../constants/images'
 import toast from 'react-hot-toast'
+import CustomerCaptureModal from '../components/CustomerCaptureModal'
+import RewardRedemptionModal from '../components/RewardRedemptionModal'
 
 // Default fallback items per category slug
 const FALLBACK_CATEGORY_ITEMS = {
-  food: {
-    name: 'Food Menu',
+  coffee: {
+    name: 'COFFEE',
     description:
-      'Our menu includes a fresh all day breakfast with items like soldiers and dippy eggs, a hearty porridge and famous scrambled eggs. Our toasties, soups and salads are yummy!',
+      'Artisanal espresso, slow pour-overs, handcrafted cappuccinos and signature hot brews made from single-origin beans.',
+    photo_url: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=1200&q=80',
+    items: [
+      { id: 'c1', name: 'Single Origin Double Espresso', photo_url: 'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=800&auto=format&fit=crop&q=80', description: 'Intense double espresso with rich caramel crema and toasted hazelnut notes.', price: 180, is_special: true, dietary_tags: ['Classic'] },
+      { id: 'c2', name: 'Artisan Hot Cappuccino', photo_url: 'https://images.unsplash.com/photo-1534778101976-62847782c213?w=800&auto=format&fit=crop&q=80', description: 'Rich double espresso with velvety microfoam dusted with chocolate.', price: 240, dietary_tags: ['House Blend'] },
+      { id: 'c3', name: 'Spanish Cortado', photo_url: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=800&auto=format&fit=crop&q=80', description: 'Equal parts espresso and warm textured milk for a bold smooth sip.', price: 220, dietary_tags: ['Espresso'] },
+      { id: 'c4', name: 'Vanilla Bean Cafe Latte', photo_url: 'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?w=800&auto=format&fit=crop&q=80', description: 'Slow-roasted espresso with natural Madagascar vanilla syrup and silky foam.', price: 270, is_special: true, dietary_tags: ['Popular'] },
+    ],
+  },
+  tea: {
+    name: 'TEA',
+    description:
+      'Loose-leaf organic teas, spiced Masala Chai, Earl Grey, calming chamomile, and ceremonial matcha infusions.',
+    photo_url: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=1200&q=80',
+    items: [
+      { id: 't1', name: 'Royal Spiced Masala Chai', photo_url: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=800&auto=format&fit=crop&q=80', description: 'Traditional slow-brewed black tea with crushed cardamom, ginger and cinnamon.', price: 140, is_special: true, dietary_tags: ['House Special'] },
+      { id: 't2', name: 'Ceremonial Uji Matcha Latte', photo_url: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=800&auto=format&fit=crop&q=80', description: 'Japanese ceremonial grade matcha whisked with oat or whole milk.', price: 320, dietary_tags: ['Healthy'] },
+      { id: 't3', name: 'Kashmiri Saffron Kahwa', photo_url: 'https://images.unsplash.com/photo-1597481499750-3e6b22637e12?w=800&auto=format&fit=crop&q=80', description: 'Fragrant green tea with saffron strands, whole spices, and slivered almonds.', price: 210, dietary_tags: ['Organic'] },
+    ],
+  },
+  breakfast: {
+    name: 'BREAKFAST',
+    description:
+      'All-day breakfast bowls, fluffy scrambled eggs, sourdough avocado toast, pancake stacks, and wholesome morning plates.',
     photo_url: 'https://www.gingerandwhite.com/cdn/shop/files/eggs-sourdough.jpg?v=1692816641',
     items: [
-      { id: 'f1', name: 'Dippy Eggs & Soldiers', photo_url: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=600&q=80', description: 'Free range soft boiled eggs with toasted sourdough soldiers.', price: 8.50, dietary_tags: ['Classic', 'Organic'] },
-      { id: 'f2', name: 'Scrambled Eggs on Toast', photo_url: IMAGES.foodEggs, description: 'Famous scrambled eggs served on freshly baked sourdough.', price: 9.00, is_special: true, dietary_tags: ['Chef Special'] },
-      { id: 'f3', name: 'Avocado Toast', photo_url: 'https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?auto=format&fit=crop&w=600&q=80', description: 'Smashed avocado with chilli flakes, lime and sea salt on toasted sourdough.', price: 10.00, dietary_tags: ['Vegan'] },
-      { id: 'f4', name: 'Shakshuka', photo_url: IMAGES.foodEggs, description: 'Eggs baked in spiced tomato sauce with tahini, crumbled feta and fresh herbs.', price: 12.50, dietary_tags: ['Vegetarian'] },
-      { id: 'f5', name: 'Salt Beef & Mustard Sourdough', photo_url: 'https://www.gingerandwhite.com/cdn/shop/files/Sandwich---Salt-Beef.jpg?v=1701193533', description: 'Slow cured salt beef with pickled gherkins and English mustard.', price: 11.50, dietary_tags: ['Signature'] },
-      { id: 'f6', name: 'Organic Steel-Cut Porridge', photo_url: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=600&q=80', description: 'Warm oat porridge topped with forest honey, toasted almonds and fresh berries.', price: 7.50, dietary_tags: ['Healthy'] },
+      { id: 'br1', name: 'Smashed Avocado & Poached Eggs', photo_url: 'https://images.unsplash.com/photo-1588137378633-dea1336ce1e2?w=800&auto=format&fit=crop&q=80', description: 'Avocado mash, cherry tomatoes, and two poached eggs on sourdough.', price: 360, is_special: true, dietary_tags: ['Chef Special'] },
+      { id: 'br2', name: 'Fluffy Brioche French Toast Stack', photo_url: 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=800&auto=format&fit=crop&q=80', description: 'Brioche toast with maple syrup, wild berries and whipped cream.', price: 330, dietary_tags: ['Sweet Breakfast'] },
     ],
   },
-  coffee: {
-    name: 'Coffee Menu',
+  snacks: {
+    name: 'SNACKS',
     description:
-      'At Musafir Cafe, we use single-origin artisanal blends hand-roasted in small batches by skilled roasters.',
-    photo_url: 'https://www.gingerandwhite.com/cdn/shop/files/hot-chocolate.jpg?v=1692819145',
+      'Crispy Peri Peri fries, loaded Mexican nachos, cheesy garlic bread baguettes, paneer pops, and savory quick bites.',
+    photo_url: 'https://images.unsplash.com/photo-1576107232684-1279f3908594?auto=format&fit=crop&w=1200&q=80',
     items: [
-      { id: 'c1', name: 'Flat White', photo_url: IMAGES.foodHotChoc, description: 'Velvety microfoam espresso. A classic house creation with rich tasting notes.', price: 4.00, is_special: true, dietary_tags: ['Signature'] },
-      { id: 'c2', name: 'Cappuccino', photo_url: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&w=600&q=80', description: 'Rich double espresso with thick, silky steamed milk foam dusted with cocoa.', price: 4.00, dietary_tags: ['House Blend'] },
-      { id: 'c3', name: 'Cortado', photo_url: 'https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=600&q=80', description: 'Equal parts espresso and warm textured milk. Perfectly balanced flavor profile.', price: 3.80, dietary_tags: ['Espresso'] },
-      { id: 'c4', name: 'Single Origin Cold Brew', photo_url: 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?auto=format&fit=crop&w=600&q=80', description: 'Slow steeped for 18 hours. Exceptionally smooth, bright and refreshing.', price: 4.50, dietary_tags: ['Cold Brew'] },
-      { id: 'c5', name: 'Spanish Latte', photo_url: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=600&q=80', description: 'Rich espresso layered with sweetened condensed milk and cinnamon aroma.', price: 5.25, is_special: true, dietary_tags: ['Popular'] },
-      { id: 'c6', name: 'Vanilla Bean Affogato', photo_url: 'https://images.unsplash.com/photo-1594911772125-07fc7a2d8d9f?auto=format&fit=crop&w=600&q=80', description: 'Hot double espresso poured over a generous scoop of artisanal vanilla gelato.', price: 5.50, dietary_tags: ['Dessert Coffee'] },
+      { id: 'sn1', name: 'Crispy Peri Peri French Fries Platter', photo_url: 'https://images.unsplash.com/photo-1576107232684-1279f3908594?w=800&auto=format&fit=crop&q=80', description: 'Golden fries tossed in peri peri spice blend with garlic dip.', price: 210, dietary_tags: ['Crispy'] },
+      { id: 'sn2', name: 'Cheesy Garlic Bread Baguettes (4 Pcs)', photo_url: 'https://images.unsplash.com/photo-1619860860774-1e2e17343432?w=800&auto=format&fit=crop&q=80', description: 'Baguette slices with garlic herb butter and melted mozzarella.', price: 240, is_special: true, dietary_tags: ['Cheesy'] },
+      { id: 'sn3', name: 'Loaded Supreme Nachos', photo_url: 'https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?w=800&auto=format&fit=crop&q=80', description: 'Corn tortilla chips with queso sauce, refried beans, and pico de gallo.', price: 290, dietary_tags: ['Mexican'] },
     ],
   },
-  cakes: {
-    name: 'Cakes & Bakes',
+  sandwiches: {
+    name: 'SANDWICHES',
     description:
-      'Our cakes are freshly made by us every single morning in our kitchen. Nothing stays around for very long!',
+      'Artisanal grilled sourdough sandwiches, layered club toasties, gourmet vegetable paninis, and melt-in-the-mouth wraps.',
+    photo_url: 'https://www.gingerandwhite.com/cdn/shop/files/Sandwich---Salt-Beef.jpg?v=1701193533',
+    items: [
+      { id: 'sw1', name: 'Artisan Grilled Veggie Club Sandwich', photo_url: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=800&auto=format&fit=crop&q=80', description: 'Three layered sandwich with zucchini, peppers, cheese and fries.', price: 290, is_special: true, dietary_tags: ['Bestseller'] },
+      { id: 'sw2', name: 'Paneer Tikka Sourdough Panini', photo_url: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&auto=format&fit=crop&q=80', description: 'Tandoori paneer, pickled onions and smoked cheddar on sourdough.', price: 320, dietary_tags: ['Smoky'] },
+    ],
+  },
+  pasta: {
+    name: 'PASTA',
+    description:
+      'Al dente Italian penne & spaghetti in spicy Arrabbiata, creamy Alfredo white sauce, and fragrant herb pesto with garlic bread.',
+    photo_url: 'https://images.unsplash.com/photo-1621996346565-e3d5d6281670?auto=format&fit=crop&w=1200&q=80',
+    items: [
+      { id: 'ps1', name: 'Arrabbiata Spicy Red Sauce Penne', photo_url: 'https://images.unsplash.com/photo-1621996346565-e3d5d6281670?w=800&auto=format&fit=crop&q=80', description: 'Penne in fiery tomato sauce with chili flakes and garlic bread.', price: 360, dietary_tags: ['Spicy'] },
+      { id: 'ps2', name: 'Creamy Alfredo White Sauce Penne', photo_url: 'https://images.unsplash.com/photo-1645112411341-6c4fd023714a?w=800&auto=format&fit=crop&q=80', description: 'Parmesan cream sauce with sauteed mushrooms, herbs and toast.', price: 380, is_special: true, dietary_tags: ['Creamy'] },
+    ],
+  },
+  pizza: {
+    name: 'PIZZA',
+    description:
+      'Hand-stretched wood-fired sourdough pizzas with artisanal tomato sauce, fresh mozzarella, veggies, and aromatic herbs.',
+    photo_url: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80',
+    items: [
+      { id: 'pz1', name: 'Wood-Fired Veggie Supreme Pizza', photo_url: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80', description: 'Marinara, mozzarella, bell peppers, olives, jalapenos and fresh basil.', price: 460, is_special: true, dietary_tags: ['Signature'] },
+      { id: 'pz2', name: 'Pesto Margherita Sourdough Pizza', photo_url: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800&auto=format&fit=crop&q=80', description: 'Basil walnut pesto base, bocconcini mozzarella and cherry tomatoes.', price: 490, dietary_tags: ['Gourmet'] },
+    ],
+  },
+  desserts: {
+    name: 'DESSERTS',
+    description:
+      'Decadent warm chocolate brownies, Belgian waffles, artisan cheesecakes, tiramisu, and fresh bakery pastries.',
     photo_url: 'https://www.gingerandwhite.com/cdn/shop/files/cake_9100f966-639e-427f-ae81-17f6708a0ecf.jpg?v=1692818921',
     items: [
-      { id: 'b1', name: 'Banana Choc Chip Cake', photo_url: IMAGES.foodCake, description: 'A classic favorite. Moist, rich, and utterly irresistible sponge cake.', price: 4.50, is_special: true, dietary_tags: ['Bestseller'] },
-      { id: 'b2', name: 'Cinnamon Bun', photo_url: IMAGES.foodBaked, description: 'Freshly baked, soft and sticky with warming cinnamon and cream glaze.', price: 4.00, dietary_tags: ['Fresh Daily'] },
-      { id: 'b3', name: 'Almond Croissant', photo_url: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=600&q=80', description: 'Buttery, flaky French croissant filled with rich almond cream.', price: 4.50, dietary_tags: ['French Bakery'] },
-      { id: 'b4', name: 'Chunky Peanut Butter Cookie', photo_url: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=600&q=80', description: 'Chunky homemade peanut butter cookie with sea salt flakes.', price: 3.00, dietary_tags: ['Handmade'] },
-      { id: 'b5', name: 'Pistachio Rose Tres Leches', photo_url: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80', description: 'Cardamom milk soaked sponge with whipped cream and crushed pistachios.', price: 6.50, is_special: true, dietary_tags: ['Signature'] },
+      { id: 'ds1', name: 'Warm Belgian Chocolate Fudge Brownie', photo_url: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=800&auto=format&fit=crop&q=80', description: 'Dark chocolate brownie served warm with vanilla ice cream.', price: 260, is_special: true, dietary_tags: ['Sweet Treat'] },
+      { id: 'ds2', name: 'Classic Nutella Belgian Waffle', photo_url: 'https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=800&auto=format&fit=crop&q=80', description: 'Crispy golden waffle with Nutella spread and roasted almonds.', price: 310, dietary_tags: ['Dessert'] },
     ],
   },
-  kids: {
-    name: 'Kids Menu',
+  'cold-beverages': {
+    name: 'COLD BEVERAGES',
     description:
-      'Kids are the joy of our cafe and we have created a special menu based on lots of experience!',
-    photo_url: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1000&q=80',
+      'Chilled iced coffees, Vietnamese cold brews, thick chocolate frappes, creamy milkshakes, and fresh fruit smoothies.',
+    photo_url: 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?auto=format&fit=crop&w=1200&q=80',
     items: [
-      { id: 'k1', name: 'Kids Dippy Eggs', photo_url: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=600&q=80', description: 'Free range dippy eggs with freshly baked sourdough toast soldiers.', price: 6.50, dietary_tags: ['Kids Favorite'] },
-      { id: 'k2', name: 'Fish Finger Sandwich', photo_url: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=600&q=80', description: 'Our famous kids fish finger sandwich on soft brioche with mayo.', price: 7.00, dietary_tags: ['Crispy'] },
-      { id: 'k3', name: 'Mini Honey Porridge', photo_url: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=600&q=80', description: 'Creamy oat porridge with blossom honey and sliced banana.', price: 5.00, dietary_tags: ['Warm & Sweet'] },
-      { id: 'k4', name: 'Kids Hot Chocolate', photo_url: IMAGES.foodHotChoc, description: 'Rich creamy hot chocolate topped with fluffy marshmallows.', price: 3.50, dietary_tags: ['Sweet Treat'] },
+      { id: 'cb1', name: 'Classic Musafir Cold Coffee Frappe', photo_url: 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=800&auto=format&fit=crop&q=80', description: 'Blended cold coffee with ice cream and chocolate dust.', price: 240, is_special: true, dietary_tags: ['Bestseller'] },
+      { id: 'cb2', name: 'Wild Berry Mint Smoothie', photo_url: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=800&auto=format&fit=crop&q=80', description: 'Greek yogurt with mixed berries, raw honey and fresh garden mint.', price: 280, dietary_tags: ['Healthy'] },
+    ],
+  },
+  mocktails: {
+    name: 'MOCKTAILS',
+    description:
+      'Signature refreshing coolers, Chili Guava rosemary mocktail, sparkling mojitos, citrus fusions, and fizzy botanicals.',
+    photo_url: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=1200&q=80',
+    items: [
+      { id: 'mk1', name: 'Chili Guava Rosemary Spiced Mocktail', photo_url: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=800&auto=format&fit=crop&q=80', description: 'Pink guava juice with chili salt rim, fresh lime and scorched rosemary.', price: 240, is_special: true, dietary_tags: ['Refreshing'] },
+      { id: 'mk2', name: 'Cranberry Citrus Cold Brew Spritz', photo_url: 'https://images.unsplash.com/photo-1556881286-fc6915169721?w=800&auto=format&fit=crop&q=80', description: 'Tart cranberry juice, sparkling tonic water and cold brew float.', price: 260, dietary_tags: ['Citrus'] },
+    ],
+  },
+  combos: {
+    name: 'COMBOS',
+    description:
+      'Curated value meal combos — Pizza & Coolers, Sandwich & Coffee sets, and Cafe Special feast platters.',
+    photo_url: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&q=80',
+    items: [
+      { id: 'cm1', name: 'Solo Wanderer Combo: Sandwich + Cold Coffee', photo_url: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&auto=format&fit=crop&q=80', description: 'Grilled Veggie Club Sandwich with Cold Coffee Frappe and Peri Peri fries.', price: 460, is_special: true, dietary_tags: ['Value Combo'] },
+      { id: 'cm2', name: 'Italian Duo Combo: Pizza + Red Pasta', photo_url: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80', description: 'One 10-Inch Veggie Pizza, Arrabbiata Pasta, 2 Garlic Breads and 2 Coolers.', price: 890, dietary_tags: ['Feast'] },
     ],
   },
 }
@@ -79,27 +142,34 @@ export default function CategoryDetail() {
     setIsCartOpen,
     tableNumber,
     setTableNumber,
+    customerSession,
+    setIsCustomerCaptureOpen,
+    setIsRewardModalOpen,
   } = useCart()
 
   const [category, setCategory] = useState(null)
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
 
-  // Sync table parameter from URL (?table=1). If no table param, clear tableNumber for online ordering
+  // Sync table parameter from URL (?table=1)
   useEffect(() => {
     const tableParam = searchParams.get('table')
     if (tableParam) {
       if (tableParam !== tableNumber) {
         setTableNumber(tableParam)
       }
+      if (!customerSession.isIdentified && !customerSession.isGuest) {
+        setIsCustomerCaptureOpen(true)
+      }
     } else {
       if (tableNumber) {
         setTableNumber(null)
       }
     }
-  }, [searchParams, tableNumber, setTableNumber])
+  }, [searchParams, tableNumber, setTableNumber, customerSession, setIsCustomerCaptureOpen])
 
   useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
     async function loadData() {
       setLoading(true)
       try {
@@ -123,20 +193,22 @@ export default function CategoryDetail() {
             setItems(catItems)
           } else {
             // Fallback items if category currently has no items
-            const key = matchedCat.name.toLowerCase().includes('coffee')
-              ? 'coffee'
-              : matchedCat.name.toLowerCase().includes('cake')
-                ? 'cakes'
-                : matchedCat.name.toLowerCase().includes('kid')
-                  ? 'kids'
-                  : 'food'
+            const catNameLower = (matchedCat.name || '').toLowerCase()
+            const key =
+              Object.keys(FALLBACK_CATEGORY_ITEMS).find((k) =>
+                catNameLower.includes(k) || k.includes(catNameLower.replace(/\s+/g, '-'))
+              ) || 'coffee'
             setItems(FALLBACK_CATEGORY_ITEMS[key]?.items || [])
           }
         } else {
           // Check static fallback data
-          const fallbackKey = Object.keys(FALLBACK_CATEGORY_ITEMS).find(
-            (k) => k === categoryId.toLowerCase() || FALLBACK_CATEGORY_ITEMS[k].name.toLowerCase().includes(categoryId.toLowerCase())
-          ) || 'food'
+          const fallbackKey =
+            Object.keys(FALLBACK_CATEGORY_ITEMS).find(
+              (k) =>
+                k === categoryId.toLowerCase() ||
+                FALLBACK_CATEGORY_ITEMS[k].name.toLowerCase().includes(categoryId.toLowerCase()) ||
+                categoryId.toLowerCase().includes(k)
+            ) || 'coffee'
 
           const fallback = FALLBACK_CATEGORY_ITEMS[fallbackKey]
           setCategory({
@@ -168,62 +240,67 @@ export default function CategoryDetail() {
   return (
     <div className="bg-[#FAF8F4] min-h-screen pb-24">
 
-      {/* HERO BANNER FOR CATEGORY */}
-      <section className="relative min-h-[360px] md:min-h-[420px] flex flex-col items-center justify-center text-center px-6 overflow-hidden bg-green">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-700"
-          style={{ backgroundImage: `url(${heroImage})` }}
-        />
-        <div className="absolute inset-0 bg-black/55 backdrop-blur-[0.5px]" />
+      {/* TOP CLEAN BREADCRUMBS & LOYALTY BAR */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-4 sm:pt-5 pb-2">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#E8E2D9]">
+          <Link
+            to={`/menu${tableNumber ? `?table=${tableNumber}` : ''}`}
+            className="inline-flex items-center space-x-1.5 text-[#1C1C1C] hover:text-green text-[11px] font-sans uppercase font-bold tracking-wider transition-colors group"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
+            <span>Back to All Menus</span>
+          </Link>
 
-        <div className="relative z-10 max-w-3xl mx-auto space-y-4">
-          <div className="flex flex-wrap items-center justify-center gap-3 mb-2">
-            <Link
-              to={`/menu${tableNumber ? `?table=${tableNumber}` : ''}`}
-              className="inline-flex items-center space-x-2 text-white/80 hover:text-white text-xs font-sans uppercase font-bold tracking-widest transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back to All Menus</span>
-            </Link>
-
-            {tableNumber ? (
-              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-[11px] font-bold shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-[#25D366] animate-pulse" />
+          <div className="flex flex-wrap items-center gap-2.5">
+            {tableNumber && (
+              <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-white border border-[#E8E2D9] text-[#1C1C1C] text-[11px] font-bold shadow-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#25D366] animate-pulse" />
                 <span>Serving Table #{tableNumber}</span>
               </div>
-            ) : (
-              <></>
+            )}
+
+            {customerSession.isIdentified && (
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#E8E2D9] text-[#1C1C1C] text-[11px] font-sans shadow-sm">
+                <span className="truncate flex items-center gap-1">
+                  <span className="text-muted">Welcome,</span>
+                  <strong className="text-[#1C1C1C] font-semibold">{customerSession.name}</strong>
+                  <span className="text-[#D4A373] font-bold">⭐ {customerSession.travel_tokens}</span>
+                  <span className="text-muted">Tokens</span>
+                </span>
+                {customerSession.travel_tokens > 0 && (
+                  <button
+                    onClick={() => setIsRewardModalOpen(true)}
+                    className="px-2 py-0.5 rounded-full bg-[#D4A373] hover:bg-[#c49260] text-white text-[9px] font-bold uppercase tracking-wider transition-transform active:scale-95 cursor-pointer shadow-sm"
+                  >
+                    REDEEM
+                  </button>
+                )}
+              </div>
             )}
           </div>
+        </div>
 
-          <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight drop-shadow-md">
-            {category?.name || 'Menu Listing'}
-          </h1>
-          <p className="font-sans font-light text-white/90 text-sm md:text-base leading-relaxed max-w-xl mx-auto drop-shadow">
-            {category?.description ||
-              'Our handcrafted artisanal selection made fresh every morning with organic and locally sourced ingredients.'}
-          </p>
+        {/* CLEAN COMPACT CATEGORY TITLE & DESCRIPTION */}
+        <div className="pt-4 sm:pt-5 pb-1">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+            <div>
+              <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-[#D4A373] block mb-0.5">
+                Menu Category
+              </span>
+              <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#1C1C1C] tracking-tight">
+                {category?.name || 'Menu Listing'}
+              </h1>
+
+            </div>
+            <span className="self-start sm:self-auto text-[11px] font-sans font-bold uppercase tracking-wider text-green bg-white px-3 py-1 rounded-full border border-[#E8E2D9] shadow-sm shrink-0">
+              {items.length} Items Available
+            </span>
+          </div>
         </div>
       </section>
 
       {/* ITEMS LISTING GRID */}
-      <section className="max-w-6xl mx-auto px-6 py-16 sm:py-20">
-
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10 pb-4 border-b border-[#E8E2D9]">
-          <div>
-            <h2 className="font-serif text-3xl font-medium text-[#1C1C1C]">
-              {category?.name} Offerings
-            </h2>
-            <p className="font-sans font-light text-muted text-xs sm:text-sm mt-0.5">
-              {tableNumber
-                ? `Freshly prepared to order for Table #${tableNumber}.`
-                : 'Freshly prepared for pickup or delivery.'}
-            </p>
-          </div>
-          <span className="text-xs font-sans font-bold uppercase tracking-wider text-green bg-white px-3 py-1.5 rounded-full border border-border">
-            {items.length} Items Available
-          </span>
-        </div>
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-4 pb-16">
 
         {loading ? (
           <div className="py-20 flex flex-col items-center justify-center space-y-3 text-muted">
@@ -231,14 +308,14 @@ export default function CategoryDetail() {
             <p className="text-xs font-sans font-medium">Loading freshly brewed menu items...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
             {items.map((item) => {
               const displayImage =
                 item.photo_url ||
                 item.img ||
                 'https://www.gingerandwhite.com/cdn/shop/files/eggs-sourdough.jpg?v=1692816641'
               const formattedPrice =
-                typeof item.price === 'number' ? `$${item.price.toFixed(2)}` : String(item.price || '$0.00')
+                typeof item.price === 'number' ? `₹${item.price.toFixed(2)}` : String(item.price || '₹0.00')
 
               // Check if item is already in cart
               const cartItem = cart.find((c) => c.id === item.id)
@@ -246,11 +323,11 @@ export default function CategoryDetail() {
               return (
                 <div
                   key={item.id || item.name}
-                  className="bg-white rounded-xl overflow-hidden border border-[#E8E2D9] hover:shadow-lg transition-all duration-300 flex flex-col justify-between group"
+                  className="bg-white rounded-2xl overflow-hidden border border-[#E8E2D9] hover:border-[#1C1C1C]/30 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
                 >
                   <div>
-                    {/* Item Image with Badges */}
-                    <div className="relative w-full h-48 bg-[#FAF8F4] overflow-hidden">
+                    {/* Item Image with Wide Aspect Ratio and Badge Overlays */}
+                    <div className="relative w-full h-44 sm:h-48 bg-[#F5F2EB] overflow-hidden">
                       <img
                         src={displayImage}
                         alt={item.name}
@@ -262,61 +339,71 @@ export default function CategoryDetail() {
 
                       {/* Overlaid Badges & Dietary Tags on the Image */}
                       <div className="absolute top-3 left-3 right-3 flex items-start justify-between gap-1.5 pointer-events-none">
-                        <div className="flex flex-wrap gap-1">
+                        <div className="flex flex-wrap gap-1.5">
                           {item.dietary_tags &&
-                            item.dietary_tags.map((tag) => (
-                              <span
-                                key={tag}
-                                className="text-[10px] font-bold bg-white/95 backdrop-blur-sm text-green border border-border px-2 py-0.5 rounded-md shadow-sm"
-                              >
-                                {tag}
-                              </span>
-                            ))}
+                            item.dietary_tags.map((tag, idx) => {
+                              const isVeg = tag.toLowerCase().includes('veg')
+                              return (
+                                <span
+                                  key={tag}
+                                  className={`text-[10px] font-bold px-2 py-0.5 rounded-md shadow-xs backdrop-blur-xs ${isVeg
+                                    ? 'bg-white/95 text-[#1B4332] border border-[#2D6A4F]/30'
+                                    : idx === 1
+                                      ? 'bg-[#FFF6ED]/95 text-[#C85A17] border border-[#FCD5B5]'
+                                      : 'bg-white/95 text-[#1C1C1C] border border-[#E8E2D9]'
+                                    }`}
+                                >
+                                  {tag}
+                                </span>
+                              )
+                            })}
                         </div>
 
                         {item.is_special && (
-                          <span className="bg-green text-white font-sans text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow shrink-0">
-                            Special ⭐
+                          <span className="bg-[#193224] text-[#F3C644] font-sans text-[9.5px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-md shadow-md shrink-0 flex items-center gap-1 border border-[#F3C644]/30">
+                            SPECIAL ★
                           </span>
                         )}
                       </div>
                     </div>
 
                     {/* Item Details */}
-                    <div className="p-5">
-                      <h3 className="font-serif text-lg font-medium mb-1.5 text-[#1C1C1C]">
+                    <div className="p-4 sm:p-5 pb-2">
+                      <h3 className="font-serif text-base sm:text-[17px] font-bold text-[#1C1C1C] leading-snug line-clamp-2 min-h-[44px]">
                         {item.name}
                       </h3>
-                      <p className="font-sans font-light text-xs text-muted leading-relaxed">
+                      <p className="font-sans font-light text-xs text-muted leading-relaxed line-clamp-2 mt-1 min-h-[34px]">
                         {item.description || item.desc || 'Handcrafted daily with artisanal ingredients.'}
                       </p>
                     </div>
                   </div>
 
                   {/* Price & Add to Order Stepper */}
-                  <div className="p-5 pt-0 flex items-center justify-between border-t border-[#F0EBE1] mt-2 pt-3">
+                  <div className="p-4 sm:p-5 pt-3 flex items-center justify-between border-t border-[#F0EBE1] mt-2">
                     <div>
                       <span className="text-[10px] text-muted font-bold block uppercase tracking-wider">
-                        Price
+                        PRICE
                       </span>
-                      <p className="font-sans font-bold text-base text-green">{formattedPrice}</p>
+                      <p className="font-sans font-bold text-base sm:text-[17px] text-[#1C1C1C]">
+                        {formattedPrice}
+                      </p>
                     </div>
 
                     {cartItem ? (
-                      <div className="flex items-center space-x-2 bg-cream p-1 rounded-xl border border-border shadow-sm">
+                      <div className="flex items-center space-x-2 bg-[#F5F2EB] p-1 rounded-xl border border-[#E8E2D9] shadow-xs">
                         <button
                           onClick={() => updateQuantity(cartItem.cartKey, -1)}
-                          className="w-7 h-7 rounded-lg bg-white hover:bg-border flex items-center justify-center font-bold text-xs text-[#1C1C1C] transition-colors active:scale-95"
+                          className="w-7 h-7 rounded-lg bg-white hover:bg-border flex items-center justify-center font-bold text-xs text-[#1C1C1C] transition-colors active:scale-95 shadow-2xs"
                           title="Reduce quantity"
                         >
                           <Minus className="w-3.5 h-3.5" />
                         </button>
-                        <span className="font-bold text-xs px-1 text-green min-w-[16px] text-center">
+                        <span className="font-bold text-xs px-1.5 text-[#1C1C1C] min-w-[16px] text-center">
                           {cartItem.quantity}
                         </span>
                         <button
                           onClick={() => updateQuantity(cartItem.cartKey, 1)}
-                          className="w-7 h-7 rounded-lg bg-white hover:bg-border flex items-center justify-center font-bold text-xs text-[#1C1C1C] transition-colors active:scale-95"
+                          className="w-7 h-7 rounded-lg bg-white hover:bg-border flex items-center justify-center font-bold text-xs text-[#1C1C1C] transition-colors active:scale-95 shadow-2xs"
                           title="Increase quantity"
                         >
                           <Plus className="w-3.5 h-3.5" />
@@ -328,7 +415,7 @@ export default function CategoryDetail() {
                           addToCart(item)
                           toast.success(`Added ${item.name} to order!`)
                         }}
-                        className="bg-[#1C1C1C] hover:bg-green text-white font-sans text-xs font-bold px-4 py-2 rounded-xl flex items-center space-x-1.5 shadow-sm active:scale-95 transition-all cursor-pointer"
+                        className="bg-[#1C1C1C] hover:bg-[#2C3E2D] text-white font-sans text-xs font-bold px-4 sm:px-5 py-2 rounded-xl flex items-center space-x-1.5 shadow-sm active:scale-95 transition-all cursor-pointer"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>Add</span>
@@ -359,7 +446,7 @@ export default function CategoryDetail() {
                   {tableNumber ? `View Your Order • Table #${tableNumber}` : 'View Online Order'}
                 </p>
                 <p className="text-xs text-white/80 font-serif">
-                  ${cartTotal.toFixed(2)} Total
+                  ₹{cartTotal.toFixed(2)} Total
                 </p>
               </div>
             </div>
@@ -392,6 +479,10 @@ export default function CategoryDetail() {
           </Link>
         </Reveal>
       </section>
+
+      {/* CUSTOMER CAPTURE & REWARD MODALS */}
+      <CustomerCaptureModal />
+      <RewardRedemptionModal />
 
     </div>
   )
