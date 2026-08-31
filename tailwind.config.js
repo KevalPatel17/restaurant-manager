@@ -9,6 +9,9 @@ export default {
         lobster: ["Lobster", "cursive"],
         display: ["Lobster", "cursive"],
       },
+      screens: {
+        xs: "440px",
+      },
       colors: {
         green: { DEFAULT: "#2C3B2D", dark: "#1A2A1B", light: "#3D5C3E" },
         cream: { DEFAULT: "#FAF8F4", warm: "#FFF8F0" },

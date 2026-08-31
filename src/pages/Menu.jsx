@@ -207,35 +207,35 @@ function CategoryShowcaseCard({ category }) {
   return (
     <div
       onClick={handleOpenListing}
-      className="w-full bg-white border border-[#E8E2D9] rounded-2xl overflow-hidden grid grid-cols-2 h-[180px] sm:h-[195px] md:h-[205px] shadow-xs hover:shadow-xl hover:border-[#1C1C1C]/40 transition-all duration-300 cursor-pointer group"
+      className="w-full bg-white border border-[#E8E2D9] rounded-2xl overflow-hidden grid grid-cols-2 min-h-[165px] h-[175px] xs:h-[185px] sm:h-[195px] md:h-[205px] shadow-xs hover:shadow-xl hover:border-[#1C1C1C]/40 transition-all duration-300 cursor-pointer group"
     >
       {/* Left Column: Icon + Title, Concise Description, Explore Button */}
-      <div className="p-4 sm:p-5 md:p-6 flex flex-col justify-between items-start text-left bg-white h-full overflow-hidden">
-        <div>
+      <div className="p-3 xs:p-4 sm:p-5 md:p-6 flex flex-col justify-between items-start text-left bg-white h-full overflow-hidden">
+        <div className="w-full">
           {/* Icon + Title Header */}
-          <div className="flex items-center space-x-2">
-            <span className="shrink-0">{icon}</span>
-            <h2 className="font-serif text-base sm:text-lg md:text-[19px] font-bold text-[#1C1C1C] tracking-wide group-hover:text-[#B87A44] transition-colors truncate">
+          <div className="flex items-center space-x-1.5 xs:space-x-2">
+            <span className="shrink-0 scale-90 xs:scale-100">{icon}</span>
+            <h2 className="font-serif text-sm xs:text-base sm:text-lg md:text-[19px] font-bold text-[#1C1C1C] tracking-wide group-hover:text-[#B87A44] transition-colors truncate">
               {categoryName}
             </h2>
           </div>
 
-          <p className="font-sans font-light text-muted text-xs sm:text-[12px] leading-relaxed line-clamp-2 mt-2">
+          <p className="font-sans font-light text-muted text-[11px] xs:text-xs sm:text-[12px] leading-snug xs:leading-relaxed line-clamp-2 mt-1 xs:mt-2">
             {description}
           </p>
         </div>
 
-        <div className="pt-2 shrink-0">
+        <div className="pt-1.5 xs:pt-2 shrink-0">
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation()
               handleOpenListing()
             }}
-            className="bg-[#1C1C1C] hover:bg-black group-hover:bg-[#1C1C1C] text-[#D4A373] group-hover:text-[#E8C547] font-sans text-[10px] sm:text-[10.5px] font-bold tracking-wider uppercase px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full transition-all duration-200 inline-flex items-center space-x-1.5 shadow-xs active:scale-95 cursor-pointer"
+            className="bg-[#1C1C1C] hover:bg-black group-hover:bg-[#1C1C1C] text-[#D4A373] group-hover:text-[#E8C547] font-sans text-[9px] xs:text-[10px] sm:text-[10.5px] font-bold tracking-wider uppercase px-2.5 xs:px-3.5 sm:px-4 py-1 xs:py-1.5 sm:py-2 rounded-full transition-all duration-200 inline-flex items-center space-x-1 shadow-xs active:scale-95 cursor-pointer truncate max-w-full"
           >
-            <span>EXPLORE {categoryName}</span>
-            <span className="text-xs">➔</span>
+            <span className="truncate">EXPLORE</span>
+            <span className="text-[10px] xs:text-xs">➔</span>
           </button>
         </div>
       </div>
@@ -323,13 +323,16 @@ function Menu() {
   return (
     <div className="bg-[#FAF8F4] min-h-screen pb-20">
 
-      {/* HERO BANNER WITH FIXED/PARALLAX BACKGROUND */}
-      <section
-        className="relative bg-fixed bg-cover bg-center bg-no-repeat min-h-[340px] md:min-h-[380px] flex flex-col items-center justify-center text-center px-6 overflow-hidden"
-        style={{
-          backgroundImage: `url(${foodImg})`,
-        }}
-      >
+      {/* HERO BANNER WITH HARDWARE-ACCELERATED STICKY PARALLAX (Works on Mobile & Desktop) */}
+      <section className="parallax-window min-h-[340px] md:min-h-[380px] flex flex-col items-center justify-center text-center px-6 bg-[#1C130D]">
+        <div className="parallax-fixed-layer">
+          <img
+            src={foodImg}
+            alt="Menu Hero Background"
+            className="w-full h-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+        </div>
         {/* Floating Loyalty Pill Badge in Hero Top-Left (Mobile Responsive) */}
         {customerSession.isIdentified && (
           <div className="absolute top-3.5 sm:top-6 md:top-8 left-3 sm:left-6 md:left-12 lg:left-20 max-w-[calc(100vw-24px)] z-20 animate-fade-in">

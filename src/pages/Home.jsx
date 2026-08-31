@@ -79,13 +79,18 @@ function Home() {
 
   return (
     <div>
-      {/* SECTION 1: HERO WITH FIXED / STICKY BACKGROUND */}
-      <section
-        className="relative w-full min-h-[85vh] md:min-h-[92vh] overflow-hidden flex items-center bg-fixed bg-cover bg-right md:bg-center bg-no-repeat bg-[#1C130D]"
-        style={{ backgroundImage: `url(${IMAGES.heroDesktop})` }}
-      >
-        {/* Subtle dark tint overlay */}
-        <div className="absolute inset-0 bg-black/25 pointer-events-none" />
+      {/* SECTION 1: HERO WITH HARDWARE-ACCELERATED STICKY PARALLAX (Works on Mobile & Desktop) */}
+      <section className="parallax-window w-full min-h-[85vh] md:min-h-[92vh] flex items-center bg-[#1C130D]">
+        {/* Sticky Background Image Layer */}
+        <div className="parallax-fixed-layer">
+          <img
+            src={IMAGES.heroDesktop}
+            alt="Musafir Cafe Hero"
+            className="w-full h-full object-cover object-right md:object-center"
+          />
+          {/* Subtle dark tint overlay */}
+          <div className="absolute inset-0 bg-black/30 pointer-events-none" />
+        </div>
 
         {/* Floating Loyalty Pill Badge in Hero Top-Left (Mobile Responsive) */}
         {customerSession.isIdentified && (
@@ -211,159 +216,157 @@ function Home() {
         </div>
       </section>
 
-      {/* SECTION 4: G&W COLLECT */}
-      <section className="bg-[#FAF8F4] py-20 px-6 text-center">
-        <Reveal as="h2" className="section-heading mb-4">MCafe Collect</Reveal>
-        <Reveal as="p" delay={150} className="section-sub mb-14">We will have your order ready for you.</Reveal>
+      {/* SECTION 4: MCAFEE COLLECT */}
+      <section className="bg-[#FAF8F4] py-14 sm:py-20 px-4 sm:px-6 text-center">
+        <Reveal as="h2" className="section-heading mb-3 sm:mb-4">Musafir Cafe Collect</Reveal>
+        <Reveal as="p" delay={150} className="section-sub mb-10 sm:mb-14">We will have your artisan order freshly packed and ready for you.</Reveal>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           {/* Card 1 */}
-          <div className="bg-white rounded overflow-hidden">
-            <img src={IMAGES.collectShop} alt="Coffee Shop" className="w-full h-72 object-cover" />
-            <div className="p-6 text-left">
-              <h3 className="font-serif text-2xl font-medium mb-3">Coffee Shop</h3>
-              <p className="font-sans font-light text-sm text-muted leading-relaxed mb-6">
-                Click and collect from our menu for now or the future. Enjoy coffee, cakes, eggs, salads, toasties, granola and juices to go.
+          <div className="bg-white rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-shadow border border-[#E8E2D9]">
+            <img src={IMAGES.collectShop} alt="Musafir Coffee Shop" className="w-full h-56 sm:h-72 object-cover" />
+            <div className="p-5 sm:p-6 text-left">
+              <h3 className="font-serif text-xl sm:text-2xl font-medium mb-2.5 text-[#1C1C1C]">Cafe Dine-In &amp; Collect</h3>
+              <p className="font-sans font-light text-xs sm:text-sm text-muted leading-relaxed mb-6">
+                Click and collect from our menu for now or later. Enjoy specialty coffees, cakes, sourdough toasties, artisan cookies and fresh coolers to go.
               </p>
-              <a href="#" className="btn-dark">Order from G&amp;W</a>
+              <Link to="/menu" className="btn-dark">Order from Musafir</Link>
             </div>
           </div>
           {/* Card 2 */}
-          <div className="bg-white rounded overflow-hidden">
-            <img src={IMAGES.collectWindow} alt="At the Window" className="w-full h-72 object-cover" />
-            <div className="p-6 text-left">
-              <h3 className="font-serif text-2xl font-medium mb-3">At the Window</h3>
-              <p className="font-sans font-light text-sm text-muted leading-relaxed mb-6">
-                Click and collect your delicious hot coffee, protein shakes, salads, borekas, cinnamon buns, pastries, cookies and sandwiches.
+          <div className="bg-white rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-shadow border border-[#E8E2D9]">
+            <img src={IMAGES.collectWindow} alt="Musafir Quick Window" className="w-full h-56 sm:h-72 object-cover" />
+            <div className="p-5 sm:p-6 text-left">
+              <h3 className="font-serif text-xl sm:text-2xl font-medium mb-2.5 text-[#1C1C1C]">Express Window Pickup</h3>
+              <p className="font-sans font-light text-xs sm:text-sm text-muted leading-relaxed mb-6">
+                Quick pickup for your piping hot pour-overs, iced cold brews, freshly baked brownies, cinnamon pastries, and handcrafted sandwiches.
               </p>
-              <a href="#" className="btn-dark">Order from Window</a>
+              <Link to="/menu" className="btn-dark">Order for Pickup</Link>
             </div>
           </div>
         </div>
       </section>
 
-
-
       {/* SECTION 6: EDITORIAL PHOTO STRIP */}
-      <div className="flex flex-col md:flex-row w-full">
-        <img src={IMAGES.stripSandwich} alt="Sandwich" className="flex-1 h-64 md:h-96 object-cover" />
-        <img src={IMAGES.stripGoodDay} alt="Good Day" className="flex-1 h-64 md:h-96 object-cover" />
-        <img src={IMAGES.stripCafe} alt="Cafe" className="flex-1 h-64 md:h-96 object-cover" />
+      <div className="grid grid-cols-1 sm:grid-cols-3 w-full">
+        <img src={IMAGES.stripSandwich} alt="Artisan Sandwich" className="w-full h-48 sm:h-64 md:h-80 lg:h-96 object-cover" />
+        <img src={IMAGES.stripGoodDay} alt="Musafir Cafe Atmosphere" className="w-full h-48 sm:h-64 md:h-80 lg:h-96 object-cover" />
+        <img src={IMAGES.stripCafe} alt="Brewing Espresso" className="w-full h-48 sm:h-64 md:h-80 lg:h-96 object-cover" />
       </div>
 
-      {/* SECTION 7: ABOUT G&W FEATURES */}
-      <section className="bg-[#FAF8F4] py-20 px-6 text-center">
-        <Reveal as="h2" className="section-heading mb-4">About Musafir Cafe</Reveal>
-        <Reveal as="p" delay={150} className="section-sub mb-16">A few extras that make us special.</Reveal>
+      {/* SECTION 7: ABOUT MUSAFIR CAFE FEATURES */}
+      <section className="bg-[#FAF8F4] py-14 sm:py-20 px-4 sm:px-6 text-center">
+        <Reveal as="h2" className="section-heading mb-3 sm:mb-4">About Musafir Cafe</Reveal>
+        <Reveal as="p" delay={150} className="section-sub mb-10 sm:mb-16">A few extras that make our journey special.</Reveal>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-10 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 max-w-4xl mx-auto">
           {/* Item 1 */}
-          <div className="flex flex-col items-center text-center">
-            <span className="text-5xl mb-4">🐶</span>
-            <h3 className="font-serif text-lg font-medium mb-2">Dog Friendly</h3>
-            <p className="font-sans font-light text-sm text-muted leading-relaxed">We love dogs and they are welcome inside at G&amp;W. We know most dogs by name and the treats they like!</p>
+          <div className="flex flex-col items-center text-center p-4 bg-white/60 sm:bg-transparent rounded-2xl border sm:border-none border-[#E8E2D9]">
+            <span className="text-4xl sm:text-5xl mb-3 sm:mb-4">🐶</span>
+            <h3 className="font-serif text-base sm:text-lg font-medium mb-1.5 sm:mb-2 text-[#1C1C1C]">Pet Friendly</h3>
+            <p className="font-sans font-light text-xs sm:text-sm text-muted leading-relaxed">We love animals and they are always welcome inside Musafir Cafe. We know our furry regulars by name!</p>
           </div>
           {/* Item 2 */}
-          <div className="flex flex-col items-center text-center">
-            <img src={IMAGES.iconLocal} alt="All Local" className="h-16 w-16 object-contain mb-4" />
-            <h3 className="font-serif text-lg font-medium mb-2">All Local</h3>
-            <p className="font-sans font-light text-sm text-muted leading-relaxed">We take pride in sourcing ingredients from British farmers. Our eggs are from a family farm in Wales.</p>
+          <div className="flex flex-col items-center text-center p-4 bg-white/60 sm:bg-transparent rounded-2xl border sm:border-none border-[#E8E2D9]">
+            <img src={IMAGES.iconLocal} alt="All Local" className="h-12 w-12 sm:h-16 sm:w-16 object-contain mb-3 sm:mb-4" />
+            <h3 className="font-serif text-base sm:text-lg font-medium mb-1.5 sm:mb-2 text-[#1C1C1C]">Artisanal Sourcing</h3>
+            <p className="font-sans font-light text-xs sm:text-sm text-muted leading-relaxed">We take pride in sourcing single-origin estate coffee beans from South India and organic dairy from local farms.</p>
           </div>
           {/* Item 3 */}
-          <div className="flex flex-col items-center text-center">
-            <span className="text-5xl mb-4">❤️</span>
-            <h3 className="font-serif text-lg font-medium mb-2">More than Family</h3>
-            <p className="font-sans font-light text-sm text-muted leading-relaxed">Enjoy a free coffee with every completed loyalty card. You can download our digital loyalty app.</p>
+          <div className="flex flex-col items-center text-center p-4 bg-white/60 sm:bg-transparent rounded-2xl border sm:border-none border-[#E8E2D9]">
+            <span className="text-4xl sm:text-5xl mb-3 sm:mb-4">⭐</span>
+            <h3 className="font-serif text-base sm:text-lg font-medium mb-1.5 sm:mb-2 text-[#1C1C1C]">Travel Tokens Loyalty</h3>
+            <p className="font-sans font-light text-xs sm:text-sm text-muted leading-relaxed">Earn Travel Tokens on every table order or takeout to redeem for complimentary coffee and cookies.</p>
           </div>
           {/* Item 4 */}
-          <div className="flex flex-col items-center text-center">
-            <img src={IMAGES.iconPlastic} alt="Plastic Free" className="h-16 w-16 object-contain mb-4" />
-            <h3 className="font-serif text-lg font-medium mb-2">Completely Plastic Free</h3>
-            <p className="font-sans font-light text-sm text-muted leading-relaxed">We use no plastic at G&amp;W and all our packaging is either paper, wood or fully compostable.</p>
+          <div className="flex flex-col items-center text-center p-4 bg-white/60 sm:bg-transparent rounded-2xl border sm:border-none border-[#E8E2D9]">
+            <img src={IMAGES.iconPlastic} alt="Plastic Free" className="h-12 w-12 sm:h-16 sm:w-16 object-contain mb-3 sm:mb-4" />
+            <h3 className="font-serif text-base sm:text-lg font-medium mb-1.5 sm:mb-2 text-[#1C1C1C]">Eco-Conscious Packaging</h3>
+            <p className="font-sans font-light text-xs sm:text-sm text-muted leading-relaxed">We prioritize compostable paper cups, wooden cutlery, and recyclable takeaway boxes.</p>
           </div>
           {/* Item 5 */}
-          <div className="flex flex-col items-center text-center">
-            <img src={IMAGES.iconLocation} alt="varachha" className="h-16 w-16 object-contain mb-4" />
-            <h3 className="font-serif text-lg font-medium mb-2">surat</h3>
-            <p className="font-sans font-light text-sm text-muted leading-relaxed">We are very proud to be a part of the wonderful community. We support local events and charities.</p>
+          <div className="flex flex-col items-center text-center p-4 bg-white/60 sm:bg-transparent rounded-2xl border sm:border-none border-[#E8E2D9]">
+            <img src={IMAGES.iconLocation} alt="Surat" className="h-12 w-12 sm:h-16 sm:w-16 object-contain mb-3 sm:mb-4" />
+            <h3 className="font-serif text-base sm:text-lg font-medium mb-1.5 sm:mb-2 text-[#1C1C1C]">Heart of Surat</h3>
+            <p className="font-sans font-light text-xs sm:text-sm text-muted leading-relaxed">We are very proud to be a vibrant community hub in Surat, hosting local art and creative meetups.</p>
           </div>
           {/* Item 6 */}
-          <div className="flex flex-col items-center text-center">
-            <img src={IMAGES.iconCoffee} alt="Square Mile" className="h-16 w-16 object-contain mb-4 rounded-full" />
-            <h3 className="font-serif text-lg font-medium mb-2">Square Mile</h3>
-            <p className="font-sans font-light text-sm text-muted leading-relaxed">A multi award winning exceptional quality coffee roasting company based in Surat.</p>
+          <div className="flex flex-col items-center text-center p-4 bg-white/60 sm:bg-transparent rounded-2xl border sm:border-none border-[#E8E2D9]">
+            <img src={IMAGES.iconCoffee} alt="Specialty Roasts" className="h-12 w-12 sm:h-16 sm:w-16 object-contain mb-3 sm:mb-4 rounded-full" />
+            <h3 className="font-serif text-base sm:text-lg font-medium mb-1.5 sm:mb-2 text-[#1C1C1C]">Specialty Roasting</h3>
+            <p className="font-sans font-light text-xs sm:text-sm text-muted leading-relaxed">Small-batch artisanal coffee roasting right here in Surat for peak aroma and balanced crema.</p>
           </div>
         </div>
       </section>
 
       {/* SECTION 8: PETS ARE WELCOME */}
-      <section className="bg-white py-20 px-6 text-center">
-        <Reveal as="h2" className="section-heading mb-4">Pets are Welcome</Reveal>
-        <Reveal as="p" delay={150} className="section-sub mb-12">We love your animals!</Reveal>
+      <section className="bg-white py-14 sm:py-20 px-4 sm:px-6 text-center">
+        <Reveal as="h2" className="section-heading mb-3 sm:mb-4">Pets are Welcome</Reveal>
+        <Reveal as="p" delay={150} className="section-sub mb-8 sm:mb-12">We love your companion animals!</Reveal>
 
-        <div className="flex flex-col md:flex-row w-full">
-          <img src={IMAGES.petsPhoto1} alt="Pets at G&W" className="flex-1 h-72 md:h-[500px] object-cover" />
-          <img src={IMAGES.petsPhoto2} alt="Pets at G&W" className="flex-1 h-72 md:h-[500px] object-cover" />
+        <div className="flex flex-col md:flex-row w-full gap-4 max-w-5xl mx-auto">
+          <img src={IMAGES.petsPhoto1} alt="Pets at Musafir Cafe" className="flex-1 h-64 sm:h-80 md:h-[450px] object-cover rounded-2xl" />
+          <img src={IMAGES.petsPhoto2} alt="Pets at Musafir Cafe" className="flex-1 h-64 sm:h-80 md:h-[450px] object-cover rounded-2xl" />
         </div>
       </section>
 
       {/* SECTION 9: GIFT VOUCHERS */}
-      <section className="bg-[#FAF8F4] py-20 px-6">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-          {/* Text (left on desktop, below image on mobile) */}
-          <div className="order-2 md:order-1">
-            <Reveal as="h2" className="section-heading mb-6">Musafir Cafe Gift Vouchers</Reveal>
-            <Reveal as="p" delay={150} className="font-sans font-light text-lg text-[#444] leading-relaxed mb-8">
-              Coffee is on you! Buy happiness for those you love with G&amp;W Gift Vouchers.
+      <section className="bg-[#FAF8F4] py-14 sm:py-20 px-4 sm:px-6">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 sm:gap-16 items-center">
+          {/* Text */}
+          <div className="order-2 md:order-1 text-center md:text-left">
+            <Reveal as="h2" className="section-heading mb-4 sm:mb-6">Musafir Cafe Gift Vouchers</Reveal>
+            <Reveal as="p" delay={150} className="font-sans font-light text-base sm:text-lg text-[#444] leading-relaxed mb-6 sm:mb-8">
+              Coffee is on you! Gift handcrafted happiness to those you love with Musafir Cafe Vouchers.
             </Reveal>
-            <Reveal delay={300} className="inline-block"><a href="#" className="btn-dark">Order Now</a></Reveal>
+            <Reveal delay={300} className="inline-block"><Link to="/menu" className="btn-dark">Order Vouchers</Link></Reveal>
           </div>
-          {/* Image (right on desktop, above text on mobile) */}
-          <div className="order-1 md:order-2">
-            <img src={IMAGES.vouchers} alt="Gift Vouchers" className="w-full rounded" />
+          {/* Image */}
+          <div className="order-1 md:order-2 flex justify-center">
+            <img src={IMAGES.vouchers} alt="Gift Vouchers" className="w-full max-w-md rounded-2xl shadow-sm" />
           </div>
         </div>
       </section>
 
       {/* SECTION 10: FOOD PHOTO GRID */}
       <div className="grid grid-cols-2 md:grid-cols-4 w-full">
-        <img src={IMAGES.foodEggs} alt="Eggs" className="w-full h-72 md:h-96 object-cover" />
-        <img src={IMAGES.foodBaked} alt="Baked goods" className="w-full h-72 md:h-96 object-cover" />
-        <img src={IMAGES.foodHotChoc} alt="Hot chocolate" className="w-full h-72 md:h-96 object-cover" />
-        <img src={IMAGES.foodCake} alt="Cake" className="w-full h-72 md:h-96 object-cover" />
+        <img src={IMAGES.foodEggs} alt="Eggs & Sourdough" className="w-full h-48 sm:h-64 md:h-80 object-cover" />
+        <img src={IMAGES.foodBaked} alt="Fresh Bakery Goods" className="w-full h-48 sm:h-64 md:h-80 object-cover" />
+        <img src={IMAGES.foodHotChoc} alt="Belgian Hot Chocolate" className="w-full h-48 sm:h-64 md:h-80 object-cover" />
+        <img src={IMAGES.foodCake} alt="Artisan Cake" className="w-full h-48 sm:h-64 md:h-80 object-cover" />
       </div>
 
       {/* SECTION 11: TESTIMONIALS */}
-      <section className="bg-white py-20 px-6 text-center">
-        <Reveal as="h2" className="section-heading mb-16">What People Are Saying about G&amp;W</Reveal>
+      <section className="bg-white py-14 sm:py-20 px-4 sm:px-6 text-center">
+        <Reveal as="h2" className="section-heading mb-10 sm:mb-16">What Guests Say about Musafir</Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-12 max-w-5xl mx-auto">
           {/* Review 1 */}
-          <div className="text-center">
-            <span className="font-serif text-8xl text-green leading-none mb-2 block">"</span>
-            <p className="font-sans font-light text-base text-[#444] leading-relaxed italic mb-6">
-              I tried G&amp;W because it was recommended as a great place for coffee and cake. It was exactly that, but more! Now we go there frequently. Everything on the menu is fresh and tasty, but the Shakshuka (with tahini and feta cheese) is my clear favorite. Very friendly staff too, what's not to like?
+          <div className="text-center p-4">
+            <span className="font-serif text-6xl sm:text-8xl text-green leading-none mb-1 sm:mb-2 block">"</span>
+            <p className="font-sans font-light text-sm sm:text-base text-[#444] leading-relaxed italic mb-4 sm:mb-6">
+              Musafir Cafe is hands down my favorite coffee retreat in Surat. The pour-overs and warm cookies are sublime, and the tranquil ambience makes it perfect to read or work.
             </p>
-            <p className="font-sans font-bold text-sm text-[#1C1C1C]">Jeff Harrison</p>
-            <p className="font-sans font-light text-xs text-faint">Google Guide</p>
+            <p className="font-sans font-bold text-sm text-[#1C1C1C]">Aarav Sharma</p>
+            <p className="font-sans font-light text-xs text-faint">Google Review</p>
           </div>
           {/* Review 2 */}
-          <div className="text-center">
-            <span className="font-serif text-8xl text-green leading-none mb-2 block">"</span>
-            <p className="font-sans font-light text-base text-[#444] leading-relaxed italic mb-6">
-              We popped in at 4pm for a very late lunch. We all ordered Shakshuka. It is quite honestly the best I have ever had anywhere in the UK - it had a perfect amount of smokiness and spice, the eggs were cooked to perfection. Simple food can be excellent and should not be underrated. I highly recommend this great little place.
+          <div className="text-center p-4">
+            <span className="font-serif text-6xl sm:text-8xl text-green leading-none mb-1 sm:mb-2 block">"</span>
+            <p className="font-sans font-light text-sm sm:text-base text-[#444] leading-relaxed italic mb-4 sm:mb-6">
+              We visited for evening brunch and ordered the artisan pizza and cold brew. Perfect balance of flavor and warmth. Super friendly staff and quick table QR service.
             </p>
-            <p className="font-sans font-bold text-sm text-[#1C1C1C]">Abigail Plet</p>
-            <p className="font-sans font-light text-xs text-faint">Cambridge</p>
+            <p className="font-sans font-bold text-sm text-[#1C1C1C]">Pooja Patel</p>
+            <p className="font-sans font-light text-xs text-faint">Surat Local</p>
           </div>
           {/* Review 3 */}
-          <div className="text-center">
-            <span className="font-serif text-8xl text-green leading-none mb-2 block">"</span>
-            <p className="font-sans font-light text-base text-[#444] leading-relaxed italic mb-6">
-              My favourite cafe in Surat! Sometimes there is a waiting list on weekends but it's usually not a long wait and it's very much worth it. A must go if you are around!
+          <div className="text-center p-4">
+            <span className="font-serif text-6xl sm:text-8xl text-green leading-none mb-1 sm:mb-2 block">"</span>
+            <p className="font-sans font-light text-sm sm:text-base text-[#444] leading-relaxed italic mb-4 sm:mb-6">
+              The custom cookie box builder is awesome! 6 fresh warm cookies with Biscoff and Dark Sea Salt made my day. A must-visit place when in Surat!
             </p>
-            <p className="font-sans font-bold text-sm text-[#1C1C1C]">Itamar Yeshua</p>
-            <p className="font-sans font-light text-xs text-faint">Google Guide</p>
+            <p className="font-sans font-bold text-sm text-[#1C1C1C]">Rohan Desai</p>
+            <p className="font-sans font-light text-xs text-faint">Food Traveler</p>
           </div>
         </div>
       </section>
@@ -578,22 +581,22 @@ function Home() {
       )}
 
       {/* SECTION 13: NEWSLETTER */}
-      <section className="bg-green py-20 px-6 text-center">
-        <Reveal as="h2" className="font-serif text-4xl font-semibold text-white mb-4">Join the Flavours of our Community</Reveal>
-        <Reveal as="p" delay={150} className="font-sans font-light text-white/75 text-lg mb-10 max-w-2xl mx-auto">
+      <section className="bg-green py-14 sm:py-20 px-4 sm:px-6 text-center">
+        <Reveal as="h2" className="section-heading text-white mb-3 sm:mb-4">Join the Flavours of our Community</Reveal>
+        <Reveal as="p" delay={150} className="font-sans font-light text-white/75 text-sm sm:text-base md:text-lg mb-8 sm:mb-10 max-w-2xl mx-auto">
           Receive exclusive updates, offers, and a slice of our vibrant community delivered straight to your inbox.
         </Reveal>
 
-        <form onSubmit={handleSubscribe} className="flex justify-center">
+        <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-0 max-w-md mx-auto w-full">
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Your email address"
             required
-            className="py-4 px-6 w-80 border border-white/30 bg-white/10 text-white placeholder-white/50 font-sans text-sm focus:outline-none focus:border-white"
+            className="py-3.5 sm:py-4 px-5 sm:px-6 w-full sm:w-80 border border-white/30 bg-white/10 text-white placeholder-white/50 font-sans text-xs sm:text-sm focus:outline-none focus:border-white rounded-xl sm:rounded-r-none"
           />
-          <button type="submit" className="btn-white rounded-l-none">Subscribe</button>
+          <button type="submit" className="btn-white w-full sm:w-auto rounded-xl sm:rounded-l-none">Subscribe</button>
         </form>
       </section>
     </div>

@@ -310,14 +310,13 @@ export default function Cookies() {
       {/* ─── 2. MAIN 3-COLUMN STAGING AREA ─── */}
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-center">
         
-        {/* ─── LEFT COLUMN: 3 COOKIES (lg:col-span-3) ─── */}
-        <div className="lg:col-span-3 flex flex-row lg:flex-col justify-center items-center gap-4 sm:gap-5 lg:gap-6 order-2 lg:order-1 flex-wrap">
+        {/* ─── LEFT COLUMN: 3 FLAVORS ON DESKTOP, OR ALL 6 UNIFIED ON MOBILE (lg:col-span-3) ─── */}
+        <div className="hidden lg:flex lg:col-span-3 flex-col justify-center items-center gap-6 order-1">
           {leftFlavors.map((flavor) => (
             <div
               key={flavor.id}
               className="flex flex-col items-center text-center space-y-1 group"
             >
-              {/* Draggable Cookie Disc Only */}
               <div
                 draggable="true"
                 onDragStart={(e) => handleDragStart(e, flavor.id)}
@@ -326,12 +325,10 @@ export default function Cookies() {
                 <CookieIllustration type={flavor.type} size="md" />
               </div>
 
-              {/* Flavor Title */}
-              <span className="font-sans text-[9.5px] sm:text-[10.5px] font-extrabold tracking-wider text-[#2D1B0E] max-w-[110px] leading-tight select-none">
+              <span className="font-sans text-[10.5px] font-extrabold tracking-wider text-[#2D1B0E] max-w-[110px] leading-tight select-none">
                 {flavor.name}
               </span>
 
-              {/* Plus Button */}
               <button
                 onClick={() => addToNextEmpty(flavor.id)}
                 className="w-6 h-6 rounded-full bg-[#EDE4D5] hover:bg-[#DBCDB8] text-[#5A4533] border border-[#D5C6B0] flex items-center justify-center text-xs font-bold shadow-2xs active:scale-90 transition-all cursor-pointer"
@@ -348,7 +345,7 @@ export default function Cookies() {
           
           {/* Top Angled Flap Lid */}
           <div
-            className="w-[90%] sm:w-[92%] bg-[#B5824C] border border-[#9E6D38] rounded-t-lg py-2.5 sm:py-3.5 px-3 text-center shadow-xs relative"
+            className="w-[90%] sm:w-[92%] bg-[#B5824C] border border-[#9E6D38] rounded-t-lg py-2 sm:py-3.5 px-3 text-center shadow-xs relative"
             style={{
               clipPath: 'polygon(4% 0%, 96% 0%, 100% 100%, 0% 100%)',
               background: 'linear-gradient(to bottom, #BA8852, #A8743E)',
@@ -366,7 +363,7 @@ export default function Cookies() {
           <div className="w-full bg-[#B5824C] border-2 sm:border-3 border-[#9E6D38] rounded-xl p-2.5 sm:p-3.5 shadow-xl relative">
             
             {/* Scalloped / Serrated Zig-zag Paper Liner */}
-            <div className="bg-[#EFE7D8] border border-[#DDD2BE] rounded-lg p-2.5 sm:p-4 shadow-inner relative overflow-hidden">
+            <div className="bg-[#EFE7D8] border border-[#DDD2BE] rounded-lg p-2 sm:p-4 shadow-inner relative overflow-hidden">
               
               {/* Top and Bottom Zig-zag Edge Texture Accents */}
               <div
@@ -382,7 +379,7 @@ export default function Cookies() {
                 }}
               />
 
-              {/* 6 Circular Slots: 2 Rows x 3 Columns (Compact) */}
+              {/* 6 Circular Slots: 2 Rows x 3 Columns */}
               <div className="grid grid-cols-3 gap-2 sm:gap-3.5 my-1 sm:my-2">
                 {slots.map((flavorId, idx) => {
                   const flavor = flavorId ? FLAVORS.find((f) => f.id === flavorId) : null
@@ -410,7 +407,7 @@ export default function Cookies() {
                           
                           {/* Hover Remove Tag */}
                           <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                            <span className="text-white text-[10px] font-bold bg-[#A83232] px-1.5 py-0.5 rounded-full shadow">
+                            <span className="text-white text-[9px] sm:text-[10px] font-bold bg-[#A83232] px-1.5 py-0.5 rounded-full shadow">
                               Remove ×
                             </span>
                           </div>
@@ -421,7 +418,7 @@ export default function Cookies() {
                             +
                           </span>
                           <span className="text-[6.5px] sm:text-[8px] font-sans font-bold uppercase tracking-wider text-[#8C7662] block mt-0.5 leading-none">
-                            DROP COOKIE<br />HERE
+                            TAP OR DROP<br />COOKIE
                           </span>
                         </div>
                       )}
@@ -433,7 +430,7 @@ export default function Cookies() {
             </div>
 
             {/* Bottom Cardboard Edge Brand Label */}
-            <div className="pt-1.5 text-center">
+            <div className="pt-1 text-center">
               <span className="text-[8px] sm:text-[9px] font-serif font-bold tracking-[0.2em] text-[#4A2D1A] uppercase">
                 MUSAFIR CAFE
               </span>
@@ -442,7 +439,7 @@ export default function Cookies() {
           </div>
 
           {/* ─── 3. CART CHECKOUT BAR DIRECTLY BELOW COOKIE BOX ─── */}
-          <div className="w-full mt-3.5 bg-[#2D1B0E] rounded-xl p-2.5 sm:p-3 shadow-lg border border-[#4A2D1A] flex flex-wrap items-center justify-between gap-3">
+          <div className="w-full mt-3 bg-[#2D1B0E] rounded-xl p-2.5 sm:p-3 shadow-lg border border-[#4A2D1A] flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-3">
             {/* Progress Indicators */}
             <div className="flex items-center space-x-2.5">
               <div className="flex items-center space-x-1">
@@ -461,7 +458,7 @@ export default function Cookies() {
             </div>
 
             {/* Price & Add to Cart Button */}
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-end">
               <span className="font-serif text-white font-bold text-sm sm:text-base">
                 {BOX_PRICE}
               </span>
@@ -489,7 +486,7 @@ export default function Cookies() {
           {filledCount > 0 && (
             <button
               onClick={handleClearBox}
-              className="mt-2 text-[11px] font-bold text-[#8C7662] hover:text-[#2D1B0E] flex items-center space-x-1 transition-colors"
+              className="mt-2 text-[11px] font-bold text-[#8C7662] hover:text-[#2D1B0E] flex items-center space-x-1 transition-colors cursor-pointer"
             >
               <RotateCcw className="w-3 h-3" />
               <span>Clear Box</span>
@@ -498,14 +495,13 @@ export default function Cookies() {
 
         </div>
 
-        {/* ─── RIGHT COLUMN: 3 COOKIES (lg:col-span-3) ─── */}
-        <div className="lg:col-span-3 flex flex-row lg:flex-col justify-center items-center gap-4 sm:gap-5 lg:gap-6 order-3 flex-wrap">
+        {/* ─── RIGHT COLUMN ON DESKTOP (lg:col-span-3) ─── */}
+        <div className="hidden lg:flex lg:col-span-3 flex-col justify-center items-center gap-6 order-3">
           {rightFlavors.map((flavor) => (
             <div
               key={flavor.id}
               className="flex flex-col items-center text-center space-y-1 group"
             >
-              {/* Draggable Cookie Disc Only */}
               <div
                 draggable="true"
                 onDragStart={(e) => handleDragStart(e, flavor.id)}
@@ -514,12 +510,10 @@ export default function Cookies() {
                 <CookieIllustration type={flavor.type} size="md" />
               </div>
 
-              {/* Flavor Title */}
-              <span className="font-sans text-[9.5px] sm:text-[10.5px] font-extrabold tracking-wider text-[#2D1B0E] max-w-[110px] leading-tight select-none">
+              <span className="font-sans text-[10.5px] font-extrabold tracking-wider text-[#2D1B0E] max-w-[110px] leading-tight select-none">
                 {flavor.name}
               </span>
 
-              {/* Plus Button */}
               <button
                 onClick={() => addToNextEmpty(flavor.id)}
                 className="w-6 h-6 rounded-full bg-[#EDE4D5] hover:bg-[#DBCDB8] text-[#5A4533] border border-[#D5C6B0] flex items-center justify-center text-xs font-bold shadow-2xs active:scale-90 transition-all cursor-pointer"
@@ -529,6 +523,32 @@ export default function Cookies() {
               </button>
             </div>
           ))}
+        </div>
+
+        {/* ─── MOBILE & TABLET UNIFIED 6-COOKIE FLAVOR SELECTOR (lg:hidden) ─── */}
+        <div className="lg:hidden col-span-1 order-2 mt-4 w-full max-w-lg mx-auto">
+          <div className="text-center mb-3">
+            <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#8C7662]">
+              Tap Any Flavor Below To Add (+):
+            </span>
+          </div>
+          <div className="grid grid-cols-3 gap-3 xs:gap-4 sm:gap-6 justify-items-center">
+            {FLAVORS.map((flavor) => (
+              <div
+                key={flavor.id}
+                onClick={() => addToNextEmpty(flavor.id)}
+                className="flex flex-col items-center text-center space-y-1 p-2 rounded-2xl bg-white/60 border border-[#E8E2D9] shadow-2xs active:scale-95 transition-all cursor-pointer w-full max-w-[120px]"
+              >
+                <CookieIllustration type={flavor.type} size="sm" />
+                <span className="font-sans text-[9px] xs:text-[10px] font-bold tracking-tight text-[#2D1B0E] leading-tight line-clamp-2">
+                  {flavor.shortName}
+                </span>
+                <span className="text-[9px] font-bold text-[#C8612E] bg-[#FFF2EA] px-2 py-0.5 rounded-full">
+                  + Add
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
       </div>

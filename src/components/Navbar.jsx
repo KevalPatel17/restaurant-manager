@@ -74,58 +74,54 @@ function Navbar() {
     <header className="bg-black relative z-50">
 
       {/* ─── 1. MOBILE & MD SCREEN HEADER ROW (lg:hidden) ─── */}
-      <div className="flex lg:hidden items-center justify-between px-4 sm:px-6 py-3.5 bg-black border-b border-white/10">
+      <div className="flex lg:hidden items-center justify-between px-3 xs:px-4 sm:px-6 py-3 bg-black border-b border-white/10">
         {/* Left: Hamburger Icon */}
         <button
-          className="text-white text-2xl p-1.5 hover:opacity-80 transition-opacity"
+          className="text-white text-2xl p-1.5 hover:opacity-80 transition-opacity cursor-pointer shrink-0"
           onClick={() => setMobileOpen(true)}
           aria-label="Open menu drawer"
         >
           <FiMenu />
         </button>
 
-        {/* Center: Brand Logo (Logo emblem hidden when mobile hamburger menu is displayed) */}
-        <div className="flex-1 flex justify-center items-center gap-2">
+        {/* Center: Brand Logo & Table Badge */}
+        <div className="flex-1 flex justify-center items-center gap-1.5 sm:gap-2 px-2 overflow-hidden">
           <Logo text="Musafir Cafe" showImage={false} />
           {tableNumber ? (
-            <span className="bg-green text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+            <span className="bg-green text-white text-[9.5px] xs:text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm shrink-0 truncate max-w-[90px]">
               T#{tableNumber}
             </span>
-          ) : (
-            <></>
-          )}
+          ) : null}
         </div>
 
         {/* Right: Cart Icon with Badge */}
         <button
           onClick={() => setIsCartOpen(true)}
-          className="relative text-white p-1.5 hover:opacity-80 transition-opacity flex items-center justify-center cursor-pointer"
+          className="relative text-white p-1.5 hover:opacity-80 transition-opacity flex items-center justify-center cursor-pointer shrink-0"
           aria-label="Shopping Cart"
         >
-          <FiShoppingCart className="text-2xl" />
-          <span className="absolute -top-1 -right-1.5 bg-green text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow">
+          <FiShoppingCart className="text-xl xs:text-2xl" />
+          <span className="absolute -top-1 -right-1 bg-green text-white text-[9px] xs:text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow">
             {cartCount}
           </span>
         </button>
       </div>
 
       {/* ─── 2. LARGE DESKTOP SINGLE-ROW HEADER (hidden lg:flex) ─── */}
-      <div className="hidden lg:flex items-center justify-between px-8 xl:px-12 py-4 bg-black border-b border-white/10">
+      <div className="hidden lg:flex items-center justify-between px-6 xl:px-12 py-3.5 bg-black border-b border-white/10">
         {/* Left: Brand Logo & Order Mode Badge */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 xl:gap-4 shrink-0">
           <Logo text="Musafir Cafe" />
           {tableNumber ? (
             <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-xs font-medium">
               <span className="w-2 h-2 rounded-full bg-[#25D366] animate-pulse" />
               <span>Ordering for <strong className="text-white font-bold">Table #{tableNumber}</strong></span>
             </div>
-          ) : (
-            <></>
-          )}
+          ) : null}
         </div>
 
         {/* Center: Navigation Links Directly in Header */}
-        <div className="flex items-center gap-7 xl:gap-9">
+        <div className="flex items-center gap-5 xl:gap-8">
           {/* About Us with dropdown */}
           <div
             className="relative"
@@ -134,7 +130,7 @@ function Navbar() {
           >
             <button
               onClick={() => setAboutOpen((prev) => !prev)}
-              className="flex items-center gap-1.5 text-white font-sans text-sm font-normal hover:opacity-80 transition-opacity whitespace-nowrap py-1 cursor-pointer"
+              className="flex items-center gap-1 text-white font-sans text-xs xl:text-sm font-normal hover:opacity-80 transition-opacity whitespace-nowrap py-1 cursor-pointer"
             >
               <span>About Us</span>
               <FiChevronDown
@@ -147,13 +143,13 @@ function Navbar() {
             {/* Dropdown Menu */}
             {aboutOpen && (
               <div className="absolute top-full left-0 pt-2 z-50">
-                <div className="bg-[#111111] min-w-[200px] shadow-[0_12px_32px_rgba(0,0,0,0.7)] py-2 rounded-lg border border-white/15">
+                <div className="bg-[#111111] min-w-[190px] shadow-[0_12px_32px_rgba(0,0,0,0.7)] py-2 rounded-lg border border-white/15">
                   {aboutLinks.map((item) => (
                     <Link
                       key={item.name}
                       to={item.path}
                       onClick={() => setAboutOpen(false)}
-                      className="block text-white/90 font-sans text-[13px] px-5 py-2 hover:bg-white/10 hover:text-white transition-colors"
+                      className="block text-white/90 font-sans text-xs xl:text-[13px] px-4 py-2 hover:bg-white/10 hover:text-white transition-colors"
                     >
                       {item.name}
                     </Link>
@@ -164,12 +160,12 @@ function Navbar() {
           </div>
 
           {/* Main Nav Links */}
-          <nav className="flex items-center gap-7 xl:gap-9">
+          <nav className="flex items-center gap-5 xl:gap-8">
             {navLinks.map((item) => (
               <Link
                 key={item.name}
                 to={item.path}
-                className="text-white font-sans text-sm font-normal hover:opacity-80 transition-opacity whitespace-nowrap py-1"
+                className="text-white font-sans text-xs xl:text-sm font-normal hover:opacity-80 transition-opacity whitespace-nowrap py-1"
               >
                 {item.name}
               </Link>
@@ -178,22 +174,22 @@ function Navbar() {
         </div>
 
         {/* Right: Staff Portal & Cart Buttons */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 xl:gap-3 shrink-0">
           {/* Account Button (Outlined Pill) */}
           <Link
             to="/login"
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-white/70 text-white font-sans text-sm font-normal hover:bg-white/10 hover:border-white transition-all"
+            className="inline-flex items-center gap-1.5 px-3.5 xl:px-5 py-1.5 xl:py-2 rounded-full border border-white/70 text-white font-sans text-xs xl:text-sm font-normal hover:bg-white/10 hover:border-white transition-all"
           >
-            <FiUser className="text-base" />
+            <FiUser className="text-sm xl:text-base" />
             <span>Staff Portal</span>
           </Link>
 
           {/* Cart Button (Solid White Pill) */}
           <button
             onClick={() => setIsCartOpen(true)}
-            className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-white text-[#1C201D] font-sans text-sm font-semibold shadow-sm hover:bg-[#F7F4EE] transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 xl:px-5 py-1.5 xl:py-2 rounded-full bg-white text-[#1C201D] font-sans text-xs xl:text-sm font-semibold shadow-sm hover:bg-[#F7F4EE] transition-all cursor-pointer"
           >
-            <FiShoppingCart className="text-base text-green" />
+            <FiShoppingCart className="text-sm xl:text-base text-green" />
             <span>₹{cartTotal.toFixed(2)} ({cartCount})</span>
           </button>
         </div>
@@ -209,7 +205,7 @@ function Navbar() {
           />
 
           {/* White Drawer Container (Slides from left) */}
-          <div className="absolute left-0 top-0 h-full w-[290px] sm:w-[320px] bg-white text-[#1C1C1C] flex flex-col shadow-2xl z-50 transition-transform duration-300">
+          <div className="absolute left-0 top-0 h-full w-[280px] xs:w-[320px] max-w-[85vw] bg-white text-[#1C1C1C] flex flex-col shadow-2xl z-50 transition-transform duration-300">
 
             {/* Drawer Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-[#EAE5DC]">

@@ -249,13 +249,16 @@ function Gallery() {
   return (
     <div className="bg-[#FAF8F4] min-h-screen">
 
-      {/* ─── 1. HERO SECTION WITH FIXED/PARALLAX BACKGROUND ─── */}
-      <section
-        className="relative bg-fixed bg-cover bg-center py-16 sm:py-24 px-4 flex items-center justify-center text-center overflow-hidden"
-        style={{
-          backgroundImage: `url(${galleryBg})`,
-        }}
-      >
+      {/* ─── 1. HERO SECTION WITH HARDWARE-ACCELERATED STICKY PARALLAX (Works on Mobile & Desktop) ─── */}
+      <section className="parallax-window py-16 sm:py-24 px-4 flex items-center justify-center text-center bg-[#1A281E]">
+        <div className="parallax-fixed-layer">
+          <img
+            src={galleryBg}
+            alt="Gallery Background"
+            className="w-full h-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-black/35 pointer-events-none" />
+        </div>
         {/* Floating Loyalty Pill Badge in Hero Top-Left (Mobile Responsive) */}
         {customerSession.isIdentified ? (
           <div className="absolute top-3 left-3 sm:top-5 sm:left-5 z-20 animate-fade-in max-w-[calc(100vw-24px)]">
@@ -422,10 +425,10 @@ function Gallery() {
           {/* Close Button */}
           <button
             onClick={() => setLightboxIndex(null)}
-            className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 rounded-full bg-white/10 hover:bg-white/25 text-white transition-colors cursor-pointer z-20"
+            className="absolute top-3 right-3 sm:top-6 sm:right-6 p-2 rounded-full bg-white/10 hover:bg-white/25 text-white transition-colors cursor-pointer z-30"
             title="Close (Esc)"
           >
-            <FiX className="w-6 h-6" />
+            <FiX className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
 
           {/* Prev Button */}
@@ -434,10 +437,10 @@ function Gallery() {
               e.stopPropagation()
               handlePrev()
             }}
-            className="absolute left-3 sm:left-6 p-3 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all cursor-pointer z-20 hover:scale-110 active:scale-95"
+            className="absolute left-2 sm:left-6 p-2 sm:p-3 rounded-full bg-white/15 hover:bg-white/30 text-white transition-all cursor-pointer z-30 hover:scale-110 active:scale-95 shadow-md"
             title="Previous (Left Arrow)"
           >
-            <FiChevronLeft className="w-6 h-6" />
+            <FiChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
 
           {/* Next Button */}
@@ -446,10 +449,10 @@ function Gallery() {
               e.stopPropagation()
               handleNext()
             }}
-            className="absolute right-3 sm:right-6 p-3 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all cursor-pointer z-20 hover:scale-110 active:scale-95"
+            className="absolute right-2 sm:right-6 p-2 sm:p-3 rounded-full bg-white/15 hover:bg-white/30 text-white transition-all cursor-pointer z-30 hover:scale-110 active:scale-95 shadow-md"
             title="Next (Right Arrow)"
           >
-            <FiChevronRight className="w-6 h-6" />
+            <FiChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
 
           {/* Modal Content Box */}

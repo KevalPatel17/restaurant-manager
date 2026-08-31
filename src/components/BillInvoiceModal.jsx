@@ -236,12 +236,12 @@ export default function BillInvoiceModal({ isOpen, onClose, order, onStatusUpdat
           </div>
 
           {/* Action Footer */}
-          <div className="p-4 sm:p-5 border-t border-border bg-[#FAF8F4] flex flex-wrap gap-2 justify-between print:hidden">
+          <div className="p-3.5 sm:p-5 border-t border-border bg-[#FAF8F4] flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between print:hidden">
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
               <button
                 onClick={handlePrint}
-                className="py-2.5 px-3 rounded-xl bg-white hover:bg-cream text-[#1E130D] text-xs font-bold transition-colors flex items-center space-x-1.5 border border-border shadow-sm"
+                className="flex-1 sm:flex-initial py-2.5 px-3 rounded-xl bg-white hover:bg-cream text-[#1E130D] text-xs font-bold transition-colors flex items-center justify-center space-x-1.5 border border-border shadow-sm cursor-pointer"
               >
                 <Printer className="w-4 h-4 text-green" />
                 <span>Print</span>
@@ -249,30 +249,29 @@ export default function BillInvoiceModal({ isOpen, onClose, order, onStatusUpdat
 
               <button
                 onClick={handleSendWhatsApp}
-                className="py-2.5 px-3.5 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-white text-xs font-bold transition-all shadow-md flex items-center space-x-1.5 active:scale-95"
+                className="flex-1 sm:flex-initial py-2.5 px-3.5 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-white text-xs font-bold transition-all shadow-md flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer"
               >
                 <MessageCircle className="w-4 h-4 fill-white text-[#25D366]" />
                 <span>WhatsApp Bill</span>
               </button>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
               {!isPaid && (
                 <button
                   onClick={handleMarkCashPaid}
-                  className="py-2.5 px-3 rounded-xl bg-white hover:bg-green/10 text-green font-bold text-xs transition-colors flex items-center space-x-1 border border-border"
+                  className="flex-1 sm:flex-initial py-2.5 px-3 rounded-xl bg-white hover:bg-green/10 text-green font-bold text-xs transition-colors flex items-center justify-center space-x-1 border border-border cursor-pointer"
                 >
-                  <DollarSign className="w-3.5 h-3.5" />
-                  <span>Paid in Cash</span>
+                  <span>💵 Paid in Cash</span>
                 </button>
               )}
 
               <button
                 onClick={() => setShowGPayModal(true)}
-                className="py-2.5 px-4 rounded-xl bg-green hover:bg-green-dark text-white text-xs font-bold transition-all shadow-md flex items-center space-x-1.5"
+                className="flex-1 sm:flex-initial py-2.5 px-4 rounded-xl bg-green hover:bg-green-dark text-white text-xs font-bold transition-all shadow-md flex items-center justify-center space-x-1.5 cursor-pointer"
               >
                 <Smartphone className="w-4 h-4" />
-                <span>{isPaid ? 'View GPay Scanner' : 'Pay via GPay'}</span>
+                <span>{isPaid ? 'GPay Scanner' : 'Pay via GPay'}</span>
               </button>
             </div>
           </div>

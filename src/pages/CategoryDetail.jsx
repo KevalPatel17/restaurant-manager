@@ -308,7 +308,7 @@ export default function CategoryDetail() {
             <p className="text-xs font-sans font-medium">Loading freshly brewed menu items...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {items.map((item) => {
               const displayImage =
                 item.photo_url ||
@@ -327,7 +327,7 @@ export default function CategoryDetail() {
                 >
                   <div>
                     {/* Item Image with Wide Aspect Ratio and Badge Overlays */}
-                    <div className="relative w-full h-44 sm:h-48 bg-[#F5F2EB] overflow-hidden">
+                    <div className="relative w-full h-40 sm:h-48 bg-[#F5F2EB] overflow-hidden">
                       <img
                         src={displayImage}
                         alt={item.name}

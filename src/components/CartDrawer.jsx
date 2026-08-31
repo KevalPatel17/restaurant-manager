@@ -198,8 +198,8 @@ export default function CartDrawer() {
         onClick={handleClose}
       />
 
-      <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="w-screen max-w-md bg-[#FAF8F4] flex flex-col shadow-2xl border-l border-border animate-slide-left">
+      <div className="fixed inset-y-0 right-0 max-w-full flex pl-0 sm:pl-8">
+        <div className="w-screen max-w-full sm:max-w-md bg-[#FAF8F4] flex flex-col shadow-2xl border-l border-border animate-slide-left">
           
           {/* ─── SUCCESS ORDER CONFIRMATION VIEW ─── */}
           {completedOrder ? (

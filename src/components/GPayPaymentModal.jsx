@@ -112,15 +112,15 @@ export default function GPayPaymentModal({ isOpen, onClose, order, onPaymentComp
 
           <div className="mt-3 pt-3 border-t border-white/10">
             <span className="text-xs text-white/70 uppercase tracking-wider font-semibold block">Total Amount Due</span>
-            <span className="font-serif text-3xl font-black text-[#ECC980]">${amount}</span>
+            <span className="font-serif text-2xl sm:text-3xl font-black text-[#ECC980]">₹{amount}</span>
           </div>
         </div>
 
         {/* Modal Scrollable Body */}
-        <div className="p-5 overflow-y-auto space-y-4 text-center">
+        <div className="p-4 sm:p-5 overflow-y-auto space-y-3.5 sm:space-y-4 text-center">
           
-          <div className="bg-[#FAF8F4] p-4 rounded-3xl border-2 border-dashed border-[#DF9B52]/40 shadow-inner flex flex-col items-center space-y-3">
-            <div className="w-56 h-56 rounded-2xl overflow-hidden bg-white shadow-md border border-[#DF9B52]/20 p-2 flex items-center justify-center">
+          <div className="bg-[#FAF8F4] p-3 sm:p-4 rounded-3xl border-2 border-dashed border-[#DF9B52]/40 shadow-inner flex flex-col items-center space-y-2.5 sm:space-y-3">
+            <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-2xl overflow-hidden bg-white shadow-md border border-[#DF9B52]/20 p-2 flex items-center justify-center">
               <img
                 src={cafeSettings?.gpay_qr_url || generatedUpiQr || '/gpay_scanner.jpg'}
                 alt="Musafir Cafe GPay UPI QR"
@@ -140,7 +140,7 @@ export default function GPayPaymentModal({ isOpen, onClose, order, onPaymentComp
             </div>
             <button
               onClick={handleCopyUpi}
-              className="px-3 py-1.5 rounded-xl bg-white hover:bg-green hover:text-white text-[#1E130D] font-bold shadow-sm transition-colors flex items-center space-x-1 flex-shrink-0"
+              className="px-3 py-1.5 rounded-xl bg-white hover:bg-green hover:text-white text-[#1E130D] font-bold shadow-sm transition-colors flex items-center space-x-1 flex-shrink-0 cursor-pointer"
             >
               {copied ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? 'Copied' : 'Copy'}</span>
@@ -163,10 +163,10 @@ export default function GPayPaymentModal({ isOpen, onClose, order, onPaymentComp
           <button
             onClick={handleConfirmPaid}
             disabled={isConfirming}
-            className="w-full py-3.5 bg-green hover:bg-green-dark text-white rounded-2xl font-bold text-sm shadow-md transition-all active:scale-[0.98] flex items-center justify-center space-x-2"
+            className="w-full py-3.5 bg-green hover:bg-green-dark text-white rounded-2xl font-bold text-xs sm:text-sm shadow-md transition-all active:scale-[0.98] flex items-center justify-center space-x-2 cursor-pointer"
           >
             <CheckCircle2 className="w-4 h-4" />
-            <span>I Have Paid via GPay (${amount})</span>
+            <span>I Have Paid via GPay (₹{amount})</span>
           </button>
         </div>
 
